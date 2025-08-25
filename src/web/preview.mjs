@@ -4,11 +4,11 @@ import { startPreview } from "./render.mjs";
 
 let doc = globalThis.document;
 let win = doc && doc.defaultView ? doc.defaultView : globalThis;
-let ws = null;
-let P = null;
+let socket = null;
+let params = null;
 let sceneW = 512, sceneH = 128;
 let layoutLeft = null, layoutRight = null;
-let ctxL = null, ctxR = null;
+let ctxLeft = null, ctxRight = null;
 let renderer = null;
 
 function setStatus(docArg, msg) {
@@ -17,12 +17,22 @@ function setStatus(docArg, msg) {
 }
 
 function send(obj) {
-  if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
+  if (socket && socket.readyState === 1) socket.send(JSON.stringify(obj));
 }
 
 function maybeStart() {
-  if (P && layoutLeft && layoutRight && ctxL && ctxR && !renderer) {
-    renderer = startPreview(win, doc, ctxL, ctxR, () => P, sceneW, sceneH, layoutLeft, layoutRight);
+  if (params && layoutLeft && layoutRight && ctxLeft && ctxRight && !renderer) {
+    renderer = startPreview(
+      win,
+      doc,
+      ctxLeft,
+      ctxRight,
+      () => params,
+      sceneW,
+      sceneH,
+      layoutLeft,
+      layoutRight
+    );
   }
 }
 
@@ -31,15 +41,15 @@ export async function boot(docArg = globalThis.document) {
   win = docArg.defaultView || globalThis;
 
   try {
-    ws = connect(win, {
+    socket = connect(win, {
       onInit: (m) => {
-        P = m.params;
+        params = m.params;
         sceneW = m.scene.w;
         sceneH = m.scene.h;
-        initUI(doc, P, send, () => renderer && renderer.toggleFreeze());
+        initUI(doc, params, send, () => renderer && renderer.toggleFreeze());
         maybeStart();
       },
-      onParams: (m) => { P = m.params; applyUI(doc, P); },
+      onParams: (m) => { params = m.params; applyUI(doc, params); },
       onError: () => setStatus(doc, "WebSocket connection error"),
       onClose: () => setStatus(doc, "WebSocket connection closed")
     });
@@ -57,13 +67,13 @@ export async function boot(docArg = globalThis.document) {
     setStatus(doc, "Failed to load layout");
   }
 
-  const canvL = doc.getElementById("left");
-  ctxL = canvL.getContext("2d");
-  const canvR = doc.getElementById("right");
-  ctxR = canvR.getContext("2d");
+  const canvasLeft = doc.getElementById("left");
+  ctxLeft = canvasLeft.getContext("2d");
+  const canvasRight = doc.getElementById("right");
+  ctxRight = canvasRight.getContext("2d");
 
   if (!layoutLeft || !layoutRight) setStatus(doc, "Preview unavailable");
   maybeStart();
 }
 
-export { P, sceneW, sceneH, layoutLeft, layoutRight };
+export { params, sceneW, sceneH, layoutLeft, layoutRight };
