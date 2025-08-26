@@ -55,6 +55,21 @@ export function bilinearSampleRGB(sceneF32, W, H, sx, sy){
   ];
 }
 
+export function bilinearSampleWrapRGB(sceneF32, W, H, sx, sy){
+  sx = ((sx % W) + W) % W;
+  sy = ((sy % H) + H) % H;
+  const x0 = Math.floor(sx), x1 = (x0 + 1) % W;
+  const y0 = Math.floor(sy), y1 = (y0 + 1) % H;
+  const tx = sx - x0, ty = sy - y0;
+  const i00 = (y0*W + x0)*3, i10 = (y0*W + x1)*3, i01 = (y1*W + x0)*3, i11 = (y1*W + x1)*3;
+  const L = (a,b,t)=> a + (b-a)*t;
+  return [
+    L(L(sceneF32[i00],   sceneF32[i10],   tx), L(sceneF32[i01],   sceneF32[i11],   tx), ty),
+    L(L(sceneF32[i00+1], sceneF32[i10+1], tx), L(sceneF32[i01+1], sceneF32[i11+1], tx), ty),
+    L(L(sceneF32[i00+2], sceneF32[i10+2], tx), L(sceneF32[i01+2], sceneF32[i11+2], tx), ty),
+  ];
+}
+
 export function transformScene(sceneF32, W, H, shiftX, shiftY, angle){
   if (shiftX === 0 && shiftY === 0 && angle === 0) return;
   const src = sceneF32.slice();
@@ -70,7 +85,7 @@ export function transformScene(sceneF32, W, H, shiftX, shiftY, angle){
       const dy = py - cy;
       const rx = cosA * dx - sinA * dy + cx;
       const ry = sinA * dx + cosA * dy + cy;
-      const [r,g,b] = bilinearSampleRGB(src, W, H, rx, ry);
+      const [r,g,b] = bilinearSampleWrapRGB(src, W, H, rx, ry);
       const i = (y * W + x) * 3;
       sceneF32[i] = r;
       sceneF32[i+1] = g;
