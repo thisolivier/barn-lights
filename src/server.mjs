@@ -32,6 +32,8 @@ const server = http.createServer((req, res) => {
     return streamFile(p, "text/javascript", res);
   }
   if (u.pathname === "/favicon.ico") return streamFile(path.join(UI_DIR, "favicon.ico"), "image/x-icon", res);
+  if (u.pathname === "/giphy.gif") return streamFile(path.join(__dirname, "..", "giphy.gif"), "image/gif", res);
+  if (u.pathname === "/gifuct-esm.js") return streamFile(path.join(__dirname, "..", "node_modules", "gifuct-js", "dist", "gifuct.esm.js"), "text/javascript", res);
   if (u.pathname.startsWith("/effects/")) {
     const p = path.join(__dirname, u.pathname.slice(1));
     return streamFile(p, "text/javascript", res);

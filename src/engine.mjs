@@ -18,7 +18,7 @@ export const SCENE_W = 512, SCENE_H = 128; // virtual canvas per side
 // ------- params (shared to UI) -------
 export const params = {
   fpsCap: 60,
-  effect: "gradient",        // "gradient" | "solid" | "fire"
+  effect: "gradient",        // "gradient" | "solid" | "fire" | "noise"
   wallMode: "duplicate",     // "duplicate" | "independent" | "extend"
   effects: {},
   post: {

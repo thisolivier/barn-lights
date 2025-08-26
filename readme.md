@@ -1,7 +1,7 @@
 # BarnLights Playbox (test harness)
 
 Minimal Node + browser setup that:
-- renders gradients / solid / fire onto a 2D virtual scene per side,
+- renders gradients / solid / fire / noise onto a 2D virtual scene per side,
 - applies strobe / brightness / tint / roll / gamma,
 - samples per your layout JSON into per-row "slices",
 - **emits SLICES_NDJSON to stdout** (one line per frame),

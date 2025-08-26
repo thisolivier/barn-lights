@@ -9,6 +9,6 @@ Browser interface providing live preview and controls.
 - `controls/` – reusable widgets and `renderControls` helper.
 - `renderer.mjs` – scene generation and drawing. The preview dims non-pixel areas while showing LED samples in fully saturated, bright colors for clearer contrast.
 
-The UI now includes a `fireShader` effect with adjustable speed, angle, flame height, and color gradient.
+The UI now includes a `fire` effect using a GIF source with hue, saturation, speed, angle, and scale controls, as well as a `noise` effect.
 
 `ui-controls.mjs` now interacts with namespaced params (`effects` and `post`).
