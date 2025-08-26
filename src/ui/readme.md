@@ -7,6 +7,9 @@ Browser interface providing live preview and controls.
 - `connection.mjs` – WebSocket setup and message handling.
 - `ui-controls.mjs` – wires DOM controls to params and renders effect-specific widgets.
 - `controls/` – reusable widgets and `renderControls` helper.
-- `renderer.mjs` – scene generation and drawing (relies on render functions within each effect).
+- `renderer.mjs` – scene generation and drawing. The preview dims non-pixel areas while showing LED samples in fully saturated, bright colors for clearer contrast.
+- `flames.mjs` – generates animated CSS flames used by the `fireCss` effect.
+
+The UI now includes a CSS-based `fireCss` effect with a control for how many flames appear.
 
 `ui-controls.mjs` now interacts with namespaced params (`effects` and `post`).

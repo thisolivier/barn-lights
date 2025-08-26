@@ -2,7 +2,7 @@
 
 Effect modules and utilities for the renderer.
 
-- `library/` – individual effect implementations (e.g. gradient, solid, fire).
+- `library/` – individual effect implementations (e.g. gradient, solid, fire, fireCss).
 - `index.mjs` – aggregates the library into an `effects` map keyed by id.
 - `modifiers.mjs` – shared modifiers and sampling helpers.
 

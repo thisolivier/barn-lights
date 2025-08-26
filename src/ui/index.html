@@ -2,7 +2,14 @@
 <meta charset="utf-8" />
 <title>BarnLights Playbox</title>
 <style>
-  :root { --gap: 20px; }
+  :root {
+    --gap: 20px;
+    --fire-color: rgb(255,80,0);
+    --fire-color-t: rgba(255,80,0,0);
+    --dur: 1s;
+    --blur: 0.02em;
+    --part-size: 5em;
+  }
   body { font: 14px system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 20px; color:#111; }
   h1 { margin: 0 0 8px; font-size: 20px; }
   .row { display:flex; gap: var(--gap); align-items:center; margin: 6px 0; flex-wrap: wrap; }
@@ -18,6 +25,10 @@
   #right{ transform: rotateY(-15deg) skewY(2deg);  }
   .panel { display:flex; flex-direction:column; gap:var(--gap); align-items:flex-start; }
   .kbd { padding:1px 6px; border:1px solid #ccc; border-radius:4px; background:#f7f7f7; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .flames { display:none; gap:2em; justify-content:center; }
+  .fire { font-size:24px; filter:blur(var(--blur)); -webkit-filter:blur(var(--blur)); margin:3em auto 0 auto; position:relative; width:10em; height:12em; }
+  .particle { animation:rise var(--dur) ease-in infinite; background-image:radial-gradient(var(--fire-color) 20%, var(--fire-color-t) 70%); border-radius:50%; mix-blend-mode:screen; opacity:0; position:absolute; bottom:0; width:var(--part-size); height:var(--part-size); }
+  @keyframes rise { from { opacity:0; transform:translateY(0) scale(1); } 25% { opacity:1; } to { opacity:0; transform:translateY(-10em) scale(0); } }
 </style>
 
   <h1>BarnLights Playbox</h1>
@@ -31,6 +42,7 @@
           <option>gradient</option>
           <option>solid</option>
           <option>fire</option>
+          <option>fireCss</option>
         </select>
       </label>
     </div>
@@ -66,13 +78,14 @@
     </div>
   </fieldset>
 
-  <div>Hotkeys: <span class="kbd">1/2/3</span> effects, <span class="kbd">B</span> blackout (brightness=0), <span class="kbd">Space</span> freeze UI preview.</div>
+  <div>Hotkeys: <span class="kbd">1/2/3/4</span> effects, <span class="kbd">B</span> blackout (brightness=0), <span class="kbd">Space</span> freeze UI preview.</div>
 </div>
 
 <div class="barn">
   <canvas id="left"  width="512" height="128"></canvas>
   <canvas id="right" width="512" height="128"></canvas>
 </div>
+<div id="flames" class="flames"></div>
 
 <script type="module">
   import { boot } from './preview.mjs';

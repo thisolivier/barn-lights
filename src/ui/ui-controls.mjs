@@ -1,5 +1,6 @@
 import { effects } from '../effects/index.mjs';
 import { renderControls } from './controls/index.mjs';
+import { toggleFlames } from './flames.mjs';
 import { rgbToHex } from './controls/utils.mjs';
 
 let sendFn = null;
@@ -13,9 +14,15 @@ function renderEffectControls(doc, P){
   const values = P.effects[effect.id] = P.effects[effect.id] || {};
   if (currentEffectId !== effect.id){
     container.innerHTML = '';
-    container.appendChild(renderControls(schema, values, (patch)=> sendFn(patch)));
+    container.appendChild(renderControls(schema, values, (patch)=>{
+      sendFn(patch);
+      if (effect.id === 'fireCss' && patch.numFlames !== undefined){
+        toggleFlames(doc, true, patch.numFlames);
+      }
+    }));
     currentEffectId = effect.id;
   }
+  toggleFlames(doc, effect.id === 'fireCss', values.numFlames || 1);
   for (const input of container.querySelectorAll('[data-key]')){
     const key = input.dataset.key;
     const val = values[key];
@@ -114,6 +121,7 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     if (e.key === '1') effect.value = 'gradient', effect.onchange();
     if (e.key === '2') effect.value = 'solid', effect.onchange();
     if (e.key === '3') effect.value = 'fire', effect.onchange();
+    if (e.key === '4') effect.value = 'fireCss', effect.onchange();
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
     if (e.key === ' ') onToggleFreeze();
   });
