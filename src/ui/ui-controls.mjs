@@ -4,6 +4,9 @@ import { rgbToHex } from './controls/utils.mjs';
 
 let sendFn = null;
 let currentEffectId = null;
+const MAX_PITCH = 128, MAX_ROLL = 128, MAX_YAW = Math.PI;
+let setJoy = null;
+let setYaw = null;
 
 function renderEffectControls(doc, P){
   const container = doc.getElementById('effectControls');
@@ -54,6 +57,12 @@ function applyPost(doc, P){
     el.value = P.post.tint[i];
     if (span) span.textContent = P.post.tint[i];
   });
+  if (setJoy){
+    setJoy((P.post.pitchSpeed||0)/MAX_PITCH, -(P.post.rollSpeed||0)/MAX_ROLL);
+  }
+  if (setYaw){
+    setYaw((P.post.yawSpeed||0)/MAX_YAW);
+  }
 }
 
 export function applyUI(doc, P){
@@ -109,6 +118,62 @@ export function initUI(win, doc, P, send, onToggleFreeze){
       send({ tint });
     };
   });
+
+  const joy = doc.getElementById('rollPitch');
+  if (joy){
+    const handle = joy.querySelector('.handle');
+    const r = joy.clientWidth/2;
+    const dead = Math.sqrt(0.05);
+    setJoy = (nx, ny) => {
+      handle.style.left = `${50 + nx*50}%`;
+      handle.style.top  = `${50 + ny*50}%`;
+    };
+    const sendVals = (nx, ny) => {
+      const dist = Math.hypot(nx, ny);
+      if (dist < dead){ nx = 0; ny = 0; }
+      P.post.pitchSpeed = nx * MAX_PITCH;
+      P.post.rollSpeed  = -ny * MAX_ROLL;
+      send({ pitchSpeed: P.post.pitchSpeed, rollSpeed: P.post.rollSpeed });
+    };
+    let active = false;
+    const update = (e) => {
+      const rect = joy.getBoundingClientRect();
+      let nx = (e.clientX - rect.left - r)/r;
+      let ny = (e.clientY - rect.top - r)/r;
+      const mag = Math.hypot(nx, ny);
+      if (mag > 1){ nx /= mag; ny /= mag; }
+      setJoy(nx, ny);
+      sendVals(nx, ny);
+    };
+    joy.addEventListener('pointerdown', e => { active = true; joy.setPointerCapture(e.pointerId); update(e); });
+    joy.addEventListener('pointermove', e => { if (!active) return; update(e); });
+    joy.addEventListener('pointerup',   e => { active = false; joy.releasePointerCapture(e.pointerId); });
+    setJoy(0,0);
+  }
+
+  const yawEl = doc.getElementById('yaw');
+  if (yawEl){
+    const handle = yawEl.querySelector('.handle');
+    const dead = 0.05;
+    setYaw = (n) => { handle.style.left = `${(n*0.5+0.5)*100}%`; };
+    const sendVal = (n) => {
+      if (Math.abs(n) < dead) n = 0;
+      P.post.yawSpeed = n * MAX_YAW;
+      send({ yawSpeed: P.post.yawSpeed });
+    };
+    let active = false;
+    const update = (e) => {
+      const rect = yawEl.getBoundingClientRect();
+      let n = (e.clientX - rect.left) / rect.width * 2 - 1;
+      if (n > 1) n = 1; if (n < -1) n = -1;
+      setYaw(n);
+      sendVal(n);
+    };
+    yawEl.addEventListener('pointerdown', e => { active = true; yawEl.setPointerCapture(e.pointerId); update(e); });
+    yawEl.addEventListener('pointermove', e => { if (!active) return; update(e); });
+    yawEl.addEventListener('pointerup',   e => { active = false; yawEl.releasePointerCapture(e.pointerId); });
+    setYaw(0);
+  }
 
   win.addEventListener('keydown', (e) => {
     if (e.key === '1') effect.value = 'gradient', effect.onchange();

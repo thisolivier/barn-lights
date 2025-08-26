@@ -55,6 +55,30 @@ export function bilinearSampleRGB(sceneF32, W, H, sx, sy){
   ];
 }
 
+export function transformScene(sceneF32, W, H, shiftX, shiftY, angle){
+  if (shiftX === 0 && shiftY === 0 && angle === 0) return;
+  const src = sceneF32.slice();
+  const cx = W / 2;
+  const cy = H / 2;
+  const cosA = Math.cos(-angle);
+  const sinA = Math.sin(-angle);
+  for (let y = 0; y < H; y++){
+    for (let x = 0; x < W; x++){
+      const px = x - shiftX;
+      const py = y - shiftY;
+      const dx = px - cx;
+      const dy = py - cy;
+      const rx = cosA * dx - sinA * dy + cx;
+      const ry = sinA * dx + cosA * dy + cy;
+      const [r,g,b] = bilinearSampleRGB(src, W, H, rx, ry);
+      const i = (y * W + x) * 3;
+      sceneF32[i] = r;
+      sceneF32[i+1] = g;
+      sceneF32[i+2] = b;
+    }
+  }
+}
+
 export function sliceSection(sceneF32, W, H, section, sampling){
   const out = new Uint8Array(section.led_count*3);
   for (let i=0;i<section.led_count;i++){
