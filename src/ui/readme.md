@@ -9,4 +9,4 @@ Browser interface providing live preview and controls.
 - `presets.mjs` – fetches preset names and populates the dropdown list.
 - Preset controls allow saving and loading configuration snapshots.
 - `controls/` – reusable widgets and `renderControls` helper.
-- `renderer.mjs` – scene generation and drawing, duplicating a single scene to both canvases.
+- `preview-renderer.mjs` – scene generation and drawing, duplicating a single scene to both canvases.
