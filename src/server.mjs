@@ -27,6 +27,7 @@ const server = http.createServer((req, res) => {
   if (u.pathname === "/connection.mjs") return streamFile(path.join(UI_DIR, "connection.mjs"), "text/javascript", res);
   if (u.pathname === "/ui-controls.mjs") return streamFile(path.join(UI_DIR, "ui-controls.mjs"), "text/javascript", res);
   if (u.pathname === "/renderer.mjs") return streamFile(path.join(UI_DIR, "renderer.mjs"), "text/javascript", res);
+  if (u.pathname === "/render-scene.mjs") return streamFile(path.join(__dirname, "render-scene.mjs"), "text/javascript", res);
   if (u.pathname.startsWith("/controls/")) {
     const p = path.join(UI_DIR, u.pathname.slice(1));
     return streamFile(p, "text/javascript", res);
