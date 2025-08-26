@@ -1,8 +1,7 @@
 // src/render-scene.mjs
 import { effects } from "./effects/index.mjs";
-import { postPipeline, registerPostModifier } from "./effects/post.mjs";
+import { postPipeline } from "./effects/post.mjs";
 
-export { registerPostModifier };
 export const SCENE_W = 512, SCENE_H = 128;
 
 // renderScene: draw the active effect into a buffer and apply post-processing
