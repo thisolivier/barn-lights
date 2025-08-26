@@ -9,6 +9,8 @@ Dynamic UI widgets for effect parameters.
 - `color.mjs` – RGB color picker.
 - `colorStops.mjs` – editable list of color/position pairs.
 
+The `fireCss` effect uses the numeric control to set its flame count.
+
 Utilities for RGB conversions live in `utils.mjs`.
 
 Each widget marks its primary input with `data-key` so the host can sync values without re-rendering.
