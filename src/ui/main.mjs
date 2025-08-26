@@ -1,6 +1,6 @@
 import { initConnection, send } from "./connection.mjs";
 import { initUI, applyUI } from "./ui-controls.mjs";
-import { frame, toggleFreeze } from "./renderer.mjs";
+import { frame } from "./renderer.mjs";
 
 function setStatus(doc, msg){
   const el = doc.getElementById("status");
@@ -40,7 +40,7 @@ export async function run(docArg = globalThis.document){
       const sceneH = m.scene.h;
       const leftFrame  = new Float32Array(sceneW * sceneH * 3);
       const rightFrame = new Float32Array(sceneW * sceneH * 3);
-      initUI(win, doc, params, send, toggleFreeze);
+      initUI(win, doc, params, send);
       if (ctxL && ctxR) frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneW, sceneH);
       else setStatus(doc, "Preview unavailable");
     },

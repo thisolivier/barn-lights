@@ -2,8 +2,8 @@ import { sliceSection, clamp01 } from "../effects/modifiers.mjs";
 import { renderScene } from "../render-scene.mjs";
 
 let offscreen = null, offCtx = null;
-let freeze = false;
 
+// Helper for drawing LED sections
 function fullBrightRGB(r, g, b){
   const min = Math.min(r, g, b);
   const max = Math.max(r, g, b);
@@ -20,12 +20,8 @@ function fullBrightRGB(r, g, b){
   ];
 }
 
-export function toggleFreeze(){
-  freeze = !freeze;
-}
 
-
-export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
+function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
   if (!offscreen || offscreen.width !== sceneW || offscreen.height !== sceneH){
     if (win.OffscreenCanvas){
       offscreen = new win.OffscreenCanvas(sceneW, sceneH);
@@ -50,7 +46,7 @@ export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
   ctx.drawImage(offscreen, 0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
+function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
   const Wc = ctx.canvas.width, Hc = ctx.canvas.height;
   ctx.lineWidth = 0.5;
   // Faint guideline for non-pixel wires
@@ -77,13 +73,20 @@ function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
 }
 
 // frame: render once, draw to both previews, then schedule the next loop
-export function frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, P, layoutLeft, layoutRight, sceneW, sceneH) {
-  const t = freeze ? 0 : win.performance.now() / 1000;
+export function frame(
+  win, 
+  doc, 
+  ctxL, ctxR, 
+  leftFrame, rightFrame, 
+  P, 
+  layoutLeft, layoutRight, 
+  sceneW, sceneH
+) {
   renderScene(leftFrame, t, P);
   rightFrame.set(leftFrame);
-  drawScene(ctxL, leftFrame, sceneW, sceneH, win, doc);
-  if (layoutLeft) drawSections(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
-  drawScene(ctxR, rightFrame, sceneW, sceneH, win, doc);
-  if (layoutRight) drawSections(ctxR, rightFrame, layoutRight, sceneW, sceneH);
+  drawSceneToCanvas(ctxL, leftFrame, sceneW, sceneH, win, doc);
+  if (layoutLeft) drawSectionsToCanvas(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
+  drawSceneToCanvas(ctxR, rightFrame, sceneW, sceneH, win, doc);
+  if (layoutRight) drawSectionsToCanvas(ctxR, rightFrame, layoutRight, sceneW, sceneH);
   win.requestAnimationFrame(() => frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, P, layoutLeft, layoutRight, sceneW, sceneH));
 }
