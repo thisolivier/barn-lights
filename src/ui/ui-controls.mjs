@@ -113,8 +113,8 @@ export function initUI(win, doc, P, send, onToggleFreeze){
   win.addEventListener('keydown', (e) => {
     if (e.key === '1') effect.value = 'gradient', effect.onchange();
     if (e.key === '2') effect.value = 'solid', effect.onchange();
-    if (e.key === '3') effect.value = 'fire', effect.onchange();
-    if (e.key === '4') effect.value = 'fireShader', effect.onchange();
+    if (e.key === '3') effect.value = 'noise', effect.onchange();
+    if (e.key === '4') effect.value = 'fire', effect.onchange();
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
     if (e.key === ' ') onToggleFreeze();
   });

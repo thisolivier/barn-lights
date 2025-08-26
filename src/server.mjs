@@ -8,6 +8,7 @@ import { params, updateParams, layoutLeft, layoutRight, SCENE_W, SCENE_H } from 
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const UI_DIR = path.join(__dirname, "ui");
+const ROOT = path.resolve(__dirname, "..");
 
 function streamFile(p, mime, res){
   const s = createReadStream(p);
@@ -38,6 +39,7 @@ const server = http.createServer((req, res) => {
   }
   if (u.pathname === "/layout/left") return sendJson(layoutLeft, res);
   if (u.pathname === "/layout/right") return sendJson(layoutRight, res);
+  if (u.pathname === "/giphy.gif") return streamFile(path.join(ROOT, "giphy.gif"), "image/gif", res);
   res.writeHead(404).end("Not found");
 });
 

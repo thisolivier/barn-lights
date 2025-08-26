@@ -8,7 +8,8 @@
     "test": "node --test --test-concurrency=1"
   },
   "dependencies": {
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "gifuct-js": "^2.1.2"
   },
   "devDependencies": {
     "puppeteer": "^24.17.0"

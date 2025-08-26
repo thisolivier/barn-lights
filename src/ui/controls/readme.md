@@ -9,8 +9,9 @@ Dynamic UI widgets for effect parameters.
 - `color.mjs` – RGB color picker.
 - `colorStops.mjs` – editable list of color/position pairs.
 
-The `fireShader` effect uses the `colorStops` widget to define its color gradient.
+The controls library includes a `colorStops` widget for effects that need gradient definitions.
 
 Utilities for RGB conversions live in `utils.mjs`.
 
 Each widget marks its primary input with `data-key` so the host can sync values without re-rendering.
+
