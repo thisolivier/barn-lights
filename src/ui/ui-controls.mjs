@@ -5,7 +5,6 @@ import { initSpeedSlider } from './controls/speedSlider.mjs';
 
 let sendFn = null;
 let currentEffectId = null;
-let updateRoll = null;
 let updatePitch = null;
 let updateYaw = null;
 
@@ -58,7 +57,6 @@ function applyPost(doc, P){
     el.value = P.post.tint[i];
     if (span) span.textContent = P.post.tint[i];
   });
-  if (updateRoll) updateRoll(P.post.rollSpeed || 0);
   if (updatePitch) updatePitch(P.post.pitchSpeed || 0);
   if (updateYaw) updateYaw(P.post.yawSpeed || 0);
 }
@@ -117,13 +115,9 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     };
   });
 
-  const rollEl = doc.getElementById('roll');
-  if (rollEl){
-    updateRoll = initSpeedSlider(rollEl, P, send, 'rollSpeed', 128);
-  }
   const pitchEl = doc.getElementById('pitch');
   if (pitchEl){
-    updatePitch = initSpeedSlider(pitchEl, P, send, 'pitchSpeed', 128);
+    updatePitch = initSpeedSlider(pitchEl, P, send, 'pitchSpeed', 256);
   }
   const yawEl = doc.getElementById('yaw');
   if (yawEl){

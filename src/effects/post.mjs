@@ -17,17 +17,15 @@ function applyGamma(sceneF32, t, post, W, H){
   _applyGamma(sceneF32, post.gamma);
 }
 
-let roll = 0, pitch = 0, yaw = 0, lastT = 0;
+let pitch = 0, yaw = 0, lastT = 0;
 function applyTransform(sceneF32, t, post, W, H){
   const dt = lastT ? t - lastT : 0;
   lastT = t;
-  roll += post.rollSpeed * dt;
   pitch += post.pitchSpeed * dt;
   yaw += post.yawSpeed * dt;
   const sx = ((pitch % W) + W) % W;
-  const sy = ((roll % H) + H) % H;
   const ang = yaw % (Math.PI * 2);
-  _transformScene(sceneF32, W, H, sx, sy, ang);
+  _transformScene(sceneF32, W, H, sx, 0, ang);
 }
 
 export const postPipeline = [applyStrobe, applyBrightnessTint, applyGamma, applyTransform];
