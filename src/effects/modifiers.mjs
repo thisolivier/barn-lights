@@ -1,5 +1,33 @@
 export const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
+export function copyBuffer(dst, src){
+  dst.set(src);
+}
+
+export function flipHorizontal(dst, src, W, H){
+  for (let y = 0; y < H; y++){
+    for (let x = 0; x < W; x++){
+      const iSrc = (y*W + x)*3;
+      const iDst = (y*W + (W-1-x))*3;
+      dst[iDst]     = src[iSrc];
+      dst[iDst + 1] = src[iSrc + 1];
+      dst[iDst + 2] = src[iSrc + 2];
+    }
+  }
+}
+
+export function flipVertical(dst, src, W, H){
+  for (let y = 0; y < H; y++){
+    for (let x = 0; x < W; x++){
+      const iSrc = (y*W + x)*3;
+      const iDst = ((H-1-y)*W + x)*3;
+      dst[iDst]     = src[iSrc];
+      dst[iDst + 1] = src[iSrc + 1];
+      dst[iDst + 2] = src[iSrc + 2];
+    }
+  }
+}
+
 export function applyBrightnessTint(sceneF32, tint, brightness){
   const [tr,tg,tb] = tint; const g = brightness;
   for(let i=0;i<sceneF32.length;i+=3){

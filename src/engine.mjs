@@ -4,7 +4,7 @@ import path from "path";
 import url from "url";
 
 import { effects } from "./effects/index.mjs";
-import { sliceSection } from "./effects/modifiers.mjs";
+import { sliceSection, copyBuffer, flipHorizontal, flipVertical } from "./effects/modifiers.mjs";
 import { postPipeline, registerPostModifier } from "./effects/post.mjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -19,7 +19,7 @@ export const SCENE_W = 512, SCENE_H = 128; // virtual canvas per side
 export const params = {
   fpsCap: 60,
   effect: "gradient",        // "gradient" | "solid" | "fire"
-  wallMode: "duplicate",     // "duplicate" | "independent" | "extend"
+  wallMode: "duplicate",     // "duplicate" | "mirrorLR" | "mirrorTB" | "extend"
   effects: {},
   post: {
     brightness: 0.8,
@@ -100,8 +100,8 @@ function renderSceneExtended(t){
     fn(bothF, t, post, SCENE_W*2, SCENE_H);
   }
   const half = SCENE_W*SCENE_H*3;
-  leftF.set(bothF.subarray(0, half));
-  rightF.set(bothF.subarray(half));
+  copyBuffer(leftF, bothF.subarray(0, half));
+  copyBuffer(rightF, bothF.subarray(half));
 }
 
 // ------- build slices frame -------
@@ -147,12 +147,23 @@ function tick(){
     acc = 0;
 
     // Stage A+B for left/right
-    if (params.wallMode === "extend") {
-      renderSceneExtended(t);
-    } else {
-      renderSceneForSide("left", t);
-      if (params.wallMode === "duplicate") rightF.set(leftF);
-      else renderSceneForSide("right", t);
+    switch (params.wallMode) {
+      case "extend":
+        renderSceneExtended(t);
+        break;
+      case "mirrorLR":
+        renderSceneForSide("left", t);
+        flipHorizontal(rightF, leftF, SCENE_W, SCENE_H);
+        break;
+      case "mirrorTB":
+        renderSceneForSide("left", t);
+        flipVertical(rightF, leftF, SCENE_W, SCENE_H);
+        break;
+      case "duplicate":
+      default:
+        renderSceneForSide("left", t);
+        renderSceneForSide("right", t);
+        break;
     }
 
     // Emit SLICES_NDJSON to stdout

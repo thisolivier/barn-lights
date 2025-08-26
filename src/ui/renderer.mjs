@@ -1,5 +1,5 @@
 import { effects } from "../effects/index.mjs";
-import { sliceSection, clamp01 } from "../effects/modifiers.mjs";
+import { sliceSection, clamp01, copyBuffer, flipHorizontal, flipVertical } from "../effects/modifiers.mjs";
 import { postPipeline, registerPostModifier } from "../effects/post.mjs";
 
 export { registerPostModifier };
@@ -91,15 +91,28 @@ function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
 
 export function frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layoutRight, sceneW, sceneH){
   const t = freeze ? 0 : win.performance.now() / 1000;
-  if (P.wallMode === "extend") {
-    const len = leftF.length;
-    if (!bothF || bothF.length !== len * 2) bothF = new Float32Array(len * 2);
-    renderScene(bothF, "both", t, P, sceneW * 2, sceneH);
-    leftF.set(bothF.subarray(0, len));
-    rightF.set(bothF.subarray(len));
-  } else {
-    renderScene(leftF, "left", t, P, sceneW, sceneH);
-    if (P.wallMode === "duplicate") rightF.set(leftF); else renderScene(rightF, "right", t, P, sceneW, sceneH);
+  switch (P.wallMode) {
+    case "extend": {
+      const len = leftF.length;
+      if (!bothF || bothF.length !== len * 2) bothF = new Float32Array(len * 2);
+      renderScene(bothF, "both", t, P, sceneW * 2, sceneH);
+      copyBuffer(leftF, bothF.subarray(0, len));
+      copyBuffer(rightF, bothF.subarray(len));
+      break;
+    }
+    case "mirrorLR":
+      renderScene(leftF, "left", t, P, sceneW, sceneH);
+      flipHorizontal(rightF, leftF, sceneW, sceneH);
+      break;
+    case "mirrorTB":
+      renderScene(leftF, "left", t, P, sceneW, sceneH);
+      flipVertical(rightF, leftF, sceneW, sceneH);
+      break;
+    case "duplicate":
+    default:
+      renderScene(leftF, "left", t, P, sceneW, sceneH);
+      renderScene(rightF, "right", t, P, sceneW, sceneH);
+      break;
   }
   drawScene(ctxL, leftF, sceneW, sceneH, win, doc);
   if (layoutLeft)  drawSections(ctxL, leftF, layoutLeft, sceneW, sceneH);
