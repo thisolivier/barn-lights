@@ -74,14 +74,15 @@ function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
 
 // frame: render once, draw to both previews, then schedule the next loop
 export function frame(
-  win, 
-  doc, 
-  ctxL, ctxR, 
-  leftFrame, rightFrame, 
-  P, 
-  layoutLeft, layoutRight, 
+  win,
+  doc,
+  ctxL, ctxR,
+  leftFrame, rightFrame,
+  P,
+  layoutLeft, layoutRight,
   sceneW, sceneH
 ) {
+  const t = win.performance.now() / 1000;
   renderScene(leftFrame, t, P);
   rightFrame.set(leftFrame);
   drawSceneToCanvas(ctxL, leftFrame, sceneW, sceneH, win, doc);
