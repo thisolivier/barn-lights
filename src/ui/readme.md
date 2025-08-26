@@ -2,7 +2,7 @@
 
 Browser interface providing live preview and controls.
 
-- `index.html` – control layout and canvas elements grouped into General, Strobe and Tint sections.
+- `index.html` – control layout and canvas elements grouped into Effect, General, Strobe and Tint sections.
 - `main.mjs` – entry point for JS logic, wiring modules together, exposes a 'run' function.
 - `connection.mjs` – WebSocket setup and message handling.
 - `ui-controls.mjs` – wires DOM controls to params and renders effect-specific widgets.

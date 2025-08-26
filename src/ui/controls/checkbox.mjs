@@ -3,6 +3,7 @@ export function checkboxWidget(key, schema, values, send){
   label.textContent = schema.label || key;
   const input = document.createElement('input');
   input.type = 'checkbox';
+  input.dataset.key = key;
   input.checked = !!values[key];
   input.oninput = () => {
     const v = input.checked;

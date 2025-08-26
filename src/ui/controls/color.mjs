@@ -5,6 +5,7 @@ export function colorWidget(key, schema, values, send){
   label.textContent = schema.label || key;
   const input = document.createElement('input');
   input.type = 'color';
+  input.dataset.key = key;
   const current = values[key] || schema.default || [1,1,1];
   input.value = Array.isArray(current) ? rgbToHex(current) : current;
   input.oninput = () => {

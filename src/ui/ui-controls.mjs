@@ -1,16 +1,33 @@
 import { effects } from '../effects/index.mjs';
 import { renderControls } from './controls/index.mjs';
+import { rgbToHex } from './controls/utils.mjs';
 
 let sendFn = null;
+let currentEffectId = null;
 
 function renderEffectControls(doc, P){
-  const row = doc.getElementById('effectRow');
-  if (!row) return;
-  while (row.children.length > 1) row.removeChild(row.lastChild);
+  const container = doc.getElementById('effectControls');
+  if (!container) return;
   const effect = effects[P.effect] || effects['gradient'];
   const schema = effect.paramSchema || {};
   const values = P.effects[effect.id] = P.effects[effect.id] || {};
-  row.appendChild(renderControls(schema, values, (patch)=> sendFn(patch)));
+  if (currentEffectId !== effect.id){
+    container.innerHTML = '';
+    container.appendChild(renderControls(schema, values, (patch)=> sendFn(patch)));
+    currentEffectId = effect.id;
+  }
+  for (const input of container.querySelectorAll('[data-key]')){
+    const key = input.dataset.key;
+    const val = values[key];
+    if (val === undefined) continue;
+    if (input.type === 'checkbox') input.checked = !!val;
+    else if (input.type === 'color') input.value = Array.isArray(val) ? rgbToHex(val) : val;
+    else {
+      if (doc.activeElement !== input) input.value = val;
+      const span = input.nextElementSibling;
+      if (span && span.tagName === 'SPAN') span.textContent = val;
+    }
+  }
 }
 
 function applyTop(doc, P){

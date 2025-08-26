@@ -10,3 +10,5 @@ Dynamic UI widgets for effect parameters.
 - `colorStops.mjs` – editable list of color/position pairs.
 
 Utilities for RGB conversions live in `utils.mjs`.
+
+Each widget marks its primary input with `data-key` so the host can sync values without re-rendering.

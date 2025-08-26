@@ -24,8 +24,8 @@
   <div id="status"></div>
 <div class="panel">
   <fieldset>
-    <legend>General</legend>
-    <div class="row" id="effectRow">
+    <legend>Effect</legend>
+    <div class="row">
       <label>Effect
         <select id="effect">
           <option>gradient</option>
@@ -34,7 +34,11 @@
         </select>
       </label>
     </div>
+    <div class="row" id="effectControls"></div>
+  </fieldset>
 
+  <fieldset>
+    <legend>General</legend>
     <div class="row">
       <label>Brightness <input id="brightness" type="range" min="0" max="1" step="0.01"><span id="brightness_v"></span></label>
       <label>Gamma <input id="gamma" type="range" min="0.5" max="3" step="0.01"><span id="gamma_v"></span><small class="desc">brightness curve</small></label>
