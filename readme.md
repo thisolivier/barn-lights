@@ -12,6 +12,9 @@ Minimal Node + browser setup that:
 - `src/server.mjs` serves the UI and relays WebSocket param updates.
 - `src/ui/` contains the browser preview and controls.
 
+Runtime parameters are grouped under `effects` for effect-specific settings
+and `post` for modifiers like brightness, tint and strobe.
+
 ## Quick start
 ```bash
 npm i

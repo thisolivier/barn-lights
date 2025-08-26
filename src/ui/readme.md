@@ -8,3 +8,4 @@ Browser interface providing live preview and controls.
 - `renderer.mjs` – scene generation and drawing.
 - `preview.mjs` – bootstrap wiring modules together.
 - `favicon.ico` – page icon.
+`ui-controls.mjs` now interacts with namespaced params (`effects` and `post`).
