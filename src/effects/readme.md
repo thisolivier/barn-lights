@@ -4,7 +4,8 @@ Effect modules and utilities for the renderer.
 
 - `library/` – individual effect implementations (e.g. gradient, solid, fire).
 - `index.mjs` – aggregates the library into an `effects` map keyed by id.
-- `modifiers.mjs` – shared modifiers and sampling helpers, including roll/pitch/yaw transforms.
+- `modifiers.mjs` – shared modifiers and sampling helpers, including roll/pitch/yaw transforms. Contains
+  clamped and wrapping bilinear samplers (`bilinearSampleRGB` and `bilinearSampleWrapRGB`).
 - `post.mjs` – post-processing pipeline and modifier registration.
 
 Each effect contains its own render function and declares its modifiable parameters. 
