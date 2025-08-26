@@ -55,6 +55,44 @@ export function bilinearSampleRGB(sceneF32, W, H, sx, sy){
   ];
 }
 
+export function bilinearSampleWrapRGB(sceneF32, W, H, sx, sy){
+  sx = ((sx % W) + W) % W;
+  sy = ((sy % H) + H) % H;
+  const x0 = Math.floor(sx), x1 = (x0 + 1) % W;
+  const y0 = Math.floor(sy), y1 = (y0 + 1) % H;
+  const tx = sx - x0, ty = sy - y0;
+  const i00 = (y0*W + x0)*3, i10 = (y0*W + x1)*3, i01 = (y1*W + x0)*3, i11 = (y1*W + x1)*3;
+  const L = (a,b,t)=> a + (b-a)*t;
+  return [
+    L(L(sceneF32[i00],   sceneF32[i10],   tx), L(sceneF32[i01],   sceneF32[i11],   tx), ty),
+    L(L(sceneF32[i00+1], sceneF32[i10+1], tx), L(sceneF32[i01+1], sceneF32[i11+1], tx), ty),
+    L(L(sceneF32[i00+2], sceneF32[i10+2], tx), L(sceneF32[i01+2], sceneF32[i11+2], tx), ty),
+  ];
+}
+
+export function transformScene(sceneF32, W, H, angle=0){
+  if (Math.abs(angle) < 1e-6) return;
+  const out = new Float32Array(sceneF32.length);
+  const cx = W/2, cy = H/2;
+  const cosA = Math.cos(angle), sinA = Math.sin(angle);
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      const dx = x - cx;
+      const dy = y - cy;
+      let rx = dx*cosA - dy*sinA + cx;
+      let ry = dx*sinA + dy*cosA + cy;
+      rx = ((rx % W) + W) % W;
+      ry = ((ry % H) + H) % H;
+      const [r,g,b] = bilinearSampleWrapRGB(sceneF32, W, H, rx, ry);
+      const i = (y*W + x)*3;
+      out[i]   = r;
+      out[i+1] = g;
+      out[i+2] = b;
+    }
+  }
+  sceneF32.set(out);
+}
+
 export function sliceSection(sceneF32, W, H, section, sampling){
   const out = new Uint8Array(section.led_count*3);
   for (let i=0;i<section.led_count;i++){

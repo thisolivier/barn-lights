@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'assert/strict';
-import { bilinearSampleRGB, sliceSection } from '../src/effects/modifiers.mjs';
+import { bilinearSampleRGB, bilinearSampleWrapRGB, sliceSection } from '../src/effects/modifiers.mjs';
 
 // helper to compare arrays with numbers precisely
 const eq = (a, b) => assert.deepEqual(a.map(n => +n.toFixed(5)), b.map(n => +n.toFixed(5)));
@@ -27,6 +27,12 @@ test('bilinearSampleRGB corners and midpoints', () => {
   eq(bilinearSampleRGB(sceneF32, W, H, 1, 0.5), [0.5, 1, 0.5]);
   eq(bilinearSampleRGB(sceneF32, W, H, 0.5, 1), [0.5, 0.5, 1]);
   eq(bilinearSampleRGB(sceneF32, W, H, 0.5, 0.5), [0.5, 0.5, 0.5]);
+});
+
+test('bilinearSampleWrapRGB wraps around edges', () => {
+  eq(bilinearSampleWrapRGB(sceneF32, W, H, -1, 0), [0, 1, 0]);
+  eq(bilinearSampleWrapRGB(sceneF32, W, H, 2, 1), [0, 0, 1]);
+  eq(bilinearSampleWrapRGB(sceneF32, W, H, -0.5, 0), [0.5, 0.5, 0]);
 });
 
 test('sliceSection returns expected byte colors', () => {
