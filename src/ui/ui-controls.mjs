@@ -36,6 +36,8 @@ function applyTop(doc, P){
   if (fps){ fps.value = P.fpsCap; if (fpsV) fpsV.textContent = P.fpsCap; }
   const wallMode = doc.getElementById('wallMode');
   if (wallMode) wallMode.value = P.wallMode;
+  const dim = doc.getElementById('dimBackground');
+  if (dim) dim.checked = !!P.dimBackground;
 }
 
 function applyPost(doc, P){
@@ -82,6 +84,11 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     wallMode.value = P.wallMode;
     wallMode.onchange = () => { P.wallMode = wallMode.value; send({ wallMode: wallMode.value }); };
   }
+  const dim = doc.getElementById('dimBackground');
+  if (dim){
+    dim.checked = !!P.dimBackground;
+    dim.onchange = () => { P.dimBackground = dim.checked; send({ dimBackground: dim.checked }); };
+  }
   for (const [key,val] of Object.entries(P.post)){
     if (key === 'tint') continue;
     const el = doc.getElementById(key);
@@ -115,6 +122,7 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     if (e.key === '2') effect.value = 'solid', effect.onchange();
     if (e.key === '3') effect.value = 'fire', effect.onchange();
     if (e.key === '4') effect.value = 'fireShader', effect.onchange();
+    if (e.key === '5') effect.value = 'diagStripes', effect.onchange();
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
     if (e.key === ' ') onToggleFreeze();
   });

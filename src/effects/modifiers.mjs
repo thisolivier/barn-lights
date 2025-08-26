@@ -55,13 +55,13 @@ export function bilinearSampleRGB(sceneF32, W, H, sx, sy){
   ];
 }
 
-export function sliceSection(sceneF32, W, H, section, sampling){
+export function sliceSection(sceneF32, W, H, section, sampling, totalWidth = sampling.width, offset = 0){
   const out = new Uint8Array(section.led_count*3);
   for (let i=0;i<section.led_count;i++){
     const t = section.led_count>1 ? i/(section.led_count-1) : 0;
-    const xNorm = section.x0 + (section.x1 - section.x0) * t;
+    const xNorm = section.x0 + (section.x1 - section.x0) * t + offset;
     const yNorm = section.y;
-    const sx = (xNorm / sampling.width)  * (W-1);
+    const sx = (xNorm / totalWidth)  * (W-1);
     const sy = (yNorm / sampling.height) * (H-1);
     const [r,g,b] = bilinearSampleRGB(sceneF32, W, H, sx, sy);
     const j = i*3;

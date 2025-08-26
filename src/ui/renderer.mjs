@@ -38,7 +38,7 @@ export function renderScene(target, side, t, P, sceneW, sceneH){
   }
 }
 
-export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
+export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc, P){
   if (!offscreen || offscreen.width !== sceneW || offscreen.height !== sceneH){
     if (win.OffscreenCanvas){
       offscreen = new win.OffscreenCanvas(sceneW, sceneH);
@@ -50,7 +50,7 @@ export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
     offCtx = offscreen.getContext("2d");
   }
   const img = offCtx.createImageData(sceneW, sceneH);
-  const dim = 0.25; // dim factor for non-pixel regions
+  const dim = P.dimBackground ? 0.25 : 1.0; // dim factor for non-pixel regions
   for (let i = 0, j = 0; i < sceneF32.length; i += 3, j += 4){
     img.data[j]   = Math.round(clamp01(sceneF32[i]) * 255 * dim);
     img.data[j+1] = Math.round(clamp01(sceneF32[i+1]) * 255 * dim);
@@ -101,9 +101,9 @@ export function frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layout
     renderScene(leftF, "left", t, P, sceneW, sceneH);
     if (P.wallMode === "duplicate") rightF.set(leftF); else renderScene(rightF, "right", t, P, sceneW, sceneH);
   }
-  drawScene(ctxL, leftF, sceneW, sceneH, win, doc);
+  drawScene(ctxL, leftF, sceneW, sceneH, win, doc, P);
   if (layoutLeft)  drawSections(ctxL, leftF, layoutLeft, sceneW, sceneH);
-  drawScene(ctxR, rightF, sceneW, sceneH, win, doc);
+  drawScene(ctxR, rightF, sceneW, sceneH, win, doc, P);
   if (layoutRight) drawSections(ctxR, rightF, layoutRight, sceneW, sceneH);
   win.requestAnimationFrame(()=>frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layoutRight, sceneW, sceneH));
 }

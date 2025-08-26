@@ -7,6 +7,7 @@ Effect modules and utilities for the renderer.
 - `modifiers.mjs` – shared modifiers and sampling helpers.
 - `post.mjs` – post-processing pipeline and modifier registration.
 
+Available effects include `gradient`, `solid`, `fire`, the shader-based `fireShader`, and testing-friendly `diagStripes`.
 
 Each effect contains its own render function and declares its modifiable parameters.
 Modifiers, or "post" effects, are commonly available to be applied on top of any plugin effect.

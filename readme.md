@@ -1,11 +1,12 @@
 # BarnLights Playbox (test harness)
 
 Minimal Node + browser setup that:
-- renders gradients / solid / fire onto a 2D virtual scene per side,
+- renders gradients / solid / fire / diagonal stripes onto a 2D virtual scene per side,
 - applies strobe / brightness / tint / roll / gamma,
 - samples per your layout JSON into per-row "slices",
 - **emits SLICES_NDJSON to stdout** (one line per frame),
 - serves a **live preview** with a light barn perspective and per-LED colored dots.
+- preview dimming can be toggled for clarity.
 
 ## Architecture
 - `bin/engine.mjs` launches the HTTP server and invokes the engine's `start` function, streaming NDJSON frames.
