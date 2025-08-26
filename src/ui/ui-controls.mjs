@@ -125,6 +125,38 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     updateYaw = initSpeedSlider(yawEl, P, send, 'yawSpeed', Math.PI);
   }
 
+  const presetInput = doc.getElementById('presetName');
+  const presetList = doc.getElementById('presetList');
+  async function refreshPresets(){
+    if (!presetList) return;
+    const res = await win.fetch('/presets');
+    const names = await res.json();
+    presetList.innerHTML = '';
+    names.forEach(n => {
+      const opt = doc.createElement('option');
+      opt.value = n;
+      presetList.appendChild(opt);
+    });
+  }
+  refreshPresets();
+  const saveBtn = doc.getElementById('savePreset');
+  if (saveBtn){
+    saveBtn.onclick = async () => {
+      const name = presetInput?.value.trim();
+      if (!name) return;
+      await win.fetch(`/preset/save/${encodeURIComponent(name)}`, { method: 'POST' });
+      refreshPresets();
+    };
+  }
+  const loadBtn = doc.getElementById('loadPreset');
+  if (loadBtn){
+    loadBtn.onclick = async () => {
+      const name = presetInput?.value.trim();
+      if (!name) return;
+      await win.fetch(`/preset/load/${encodeURIComponent(name)}`);
+    };
+  }
+
   win.addEventListener('keydown', (e) => {
     if (e.key === '1') effect.value = 'gradient', effect.onchange();
     if (e.key === '2') effect.value = 'solid', effect.onchange();

@@ -5,6 +5,7 @@ import path from "path";
 import url from "url";
 
 import { params, updateParams, layoutLeft, layoutRight, SCENE_W, SCENE_H } from "./engine.mjs";
+import { savePreset, loadPreset, listPresets } from "./config-store.mjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const UI_DIR = path.join(__dirname, "ui");
@@ -19,7 +20,7 @@ function sendJson(obj, res){
   res.writeHead(200, { "Content-Type": "application/json" }).end(buf);
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, "http://x/");
   if (u.pathname === "/") return streamFile(path.join(UI_DIR, "index.html"), "text/html", res);
   if (u.pathname === "/preview.mjs") return streamFile(path.join(UI_DIR, "preview.mjs"), "text/javascript", res);
@@ -44,6 +45,24 @@ const server = http.createServer((req, res) => {
   }
   if (u.pathname === "/layout/left") return sendJson(layoutLeft, res);
   if (u.pathname === "/layout/right") return sendJson(layoutRight, res);
+  if (u.pathname === "/presets") return sendJson(await listPresets(), res);
+  if (u.pathname.startsWith("/preset/save/")) {
+    const name = u.pathname.slice("/preset/save/".length);
+    await savePreset(name, params);
+    return sendJson({ ok: true }, res);
+  }
+  if (u.pathname.startsWith("/preset/load/")) {
+    const name = u.pathname.slice("/preset/load/".length);
+    try {
+      const loaded = await loadPreset(name);
+      Object.assign(params, loaded);
+      for (const c of wss.clients) if (c.readyState === 1) c.send(JSON.stringify({ type: "params", params }));
+      return sendJson({ ok: true }, res);
+    } catch {
+      res.writeHead(404).end("Not found");
+      return;
+    }
+  }
   res.writeHead(404).end("Not found");
 });
 
