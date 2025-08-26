@@ -93,8 +93,17 @@ export function applyUI(doc, P){
 export function initUI(win, doc, P, send){
   sendFn = send;
   const effect = doc.getElementById('effect');
-  effect.value = P.effect;
-  effect.onchange = () => { send({ effect: effect.value }); renderEffectControls(doc,P); };
+  if (effect){
+    effect.innerHTML = '';
+    for (const id of Object.keys(effects)){
+      const opt = doc.createElement('option');
+      opt.value = id;
+      opt.textContent = id;
+      effect.appendChild(opt);
+    }
+    effect.value = P.effect;
+    effect.onchange = () => { send({ effect: effect.value }); renderEffectControls(doc,P); };
+  }
 
   const fps = doc.getElementById('fpsCap');
   const fpsV = doc.getElementById('fpsCap_v');
@@ -171,10 +180,14 @@ export function initUI(win, doc, P, send){
   }
 
   win.addEventListener('keydown', (e) => {
-    if (e.key === '1') effect.value = 'gradient', effect.onchange();
-    if (e.key === '2') effect.value = 'solid', effect.onchange();
-    if (e.key === '3') effect.value = 'fire', effect.onchange();
-    if (e.key === '4') effect.value = 'fireShader', effect.onchange();
+    if (e.key >= '1' && e.key <= '9'){
+      const idx = e.key.charCodeAt(0) - '1'.charCodeAt(0);
+      const ids = Object.keys(effects);
+      if (idx < ids.length && effect){
+        effect.value = ids[idx];
+        effect.onchange();
+      }
+    }
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
   });
 
