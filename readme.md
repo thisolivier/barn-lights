@@ -1,7 +1,7 @@
 # BarnLights Playbox (test harness)
 
 Minimal Node + browser setup that:
-- renders gradients / solid / fire onto a 2D virtual scene per side,
+- renders gradients / solid / fire onto a 2D virtual scene duplicated to both walls,
 - applies strobe / brightness / tint / roll / gamma,
 - samples per your layout JSON into per-row "slices",
 - **emits SLICES_NDJSON to stdout** (one line per frame),
@@ -14,10 +14,8 @@ Minimal Node + browser setup that:
 - `src/ui/` contains the browser preview and controls.
 
 Runtime parameters are grouped under `effects` for effect-specific settings
-and `post` for modifiers like brightness, tint and strobe which can be applied ontop.
-The top-level `wallMode` parameter chooses whether both walls share the same
-rendering (`duplicate`), render independently (`independent`), or act as a
-single wide scene spanning both sides (`extend`).
+and `post` for modifiers like brightness, tint and strobe which can be applied on top.
+A single scene is rendered each frame and copied to both walls.
 
 ## Quick start
 1. Open your terminal
