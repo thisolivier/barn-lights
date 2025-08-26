@@ -29,11 +29,16 @@ function sampleGradient(stops, t){
   return stops[stops.length - 1].color;
 }
 
+function rand(n){
+  return Math.abs(Math.sin(n * 12.9898) * 43758.5453) % 1;
+}
+
 export const id = 'fireCss';
 export const displayName = 'Fire CSS';
 export const defaultParams = {
   angle: 0.0,
   numFlames: 50,
+  speed: 1.0,
   colors: [
     { pos: 0.0, color: [0.0, 0.0, 0.0] },
     { pos: 0.3, color: [1.0, 0.0, 0.0] },
@@ -44,6 +49,7 @@ export const defaultParams = {
 export const paramSchema = {
   angle: { type: 'number', min: -Math.PI, max: Math.PI, step: 0.01, label: 'Angle (rad)' },
   numFlames: { type: 'number', min: 1, max: 50, step: 1, label: 'Number of Flames' },
+  speed: { type: 'number', min: 0.1, max: 5, step: 0.1, label: 'Speed' },
   colors: { type: 'colorStops', label: 'Colors' },
 };
 
@@ -51,12 +57,14 @@ export function render(sceneF32, W, H, t, params){
   const {
     angle = defaultParams.angle,
     numFlames = defaultParams.numFlames,
+    speed = defaultParams.speed,
     colors = defaultParams.colors,
   } = params || {};
 
   const cosA = Math.cos(angle);
   const sinA = Math.sin(angle);
   const sortedStops = [...colors].sort((a, b) => a.pos - b.pos);
+  const time = t * speed;
 
   for (let y = 0; y < H; y++){
     for (let x = 0; x < W; x++){
@@ -67,18 +75,21 @@ export function render(sceneF32, W, H, t, params){
       const cy = v - 0.5;
       const rx = cx * cosA - cy * sinA;
       const ry = cx * sinA + cy * cosA;
-      u = rx + 0.5;
-      v = ry + 0.5;
+      u = ((rx + 0.5) % 1 + 1) % 1;
+      v = clamp01(ry + 0.5);
 
       const height = clamp01(1 - v);
       let heat = 0;
-      for (let i = 0; i < numFlames; i++){
-        const center = (i + 0.5) / numFlames;
-        const width = 1 / numFlames;
-        const dx = Math.abs(u - center);
-        const flame = Math.max(0, 1 - dx / width);
-        const flicker = 0.5 + 0.5 * Math.sin(t * 2 + i * 10 + v * 5);
-        heat = Math.max(heat, flame * height * flicker);
+      for (let layer = 0; layer < 2; layer++){
+        for (let i = -2; i < numFlames + 2; i++){
+          const r = rand(i + layer * 100);
+          const center = (i + 0.5 + (r - 0.5) * 0.5) / numFlames;
+          const width = (1.5 / numFlames) * (0.7 + 0.6 * r);
+          const dx = Math.abs(u - center);
+          const flame = Math.max(0, 1 - dx / width);
+          const flicker = 0.5 + 0.5 * Math.sin(time * 2 + i * 10 + v * 5 + layer);
+          heat = Math.max(heat, flame * height * flicker);
+        }
       }
 
       heat = clamp01(heat);
