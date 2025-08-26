@@ -34,7 +34,7 @@ function renderEffectControls(doc, P){
   }
 }
 
-function applyTop(doc, P){
+function applyFpsCap(doc, P){
   const fps = doc.getElementById('fpsCap');
   const fpsV = doc.getElementById('fpsCap_v');
   if (fps) {
@@ -66,12 +66,12 @@ function applyPost(doc, P){
 export function applyUI(doc, P){
   const effect = doc.getElementById('effect');
   if (effect && effect.value !== P.effect) effect.value = P.effect;
-  applyTop(doc,P);
+  applyFpsCap(doc,P);
   applyPost(doc,P);
   renderEffectControls(doc,P);
 }
 
-export function initUI(win, doc, P, send, onToggleFreeze){
+export function initUI(win, doc, P, send){
   sendFn = send;
   const effect = doc.getElementById('effect');
   effect.value = P.effect;
@@ -157,7 +157,6 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     if (e.key === '3') effect.value = 'fire', effect.onchange();
     if (e.key === '4') effect.value = 'fireShader', effect.onchange();
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
-    if (e.key === ' ') onToggleFreeze();
   });
 
   applyUI(doc, P);
