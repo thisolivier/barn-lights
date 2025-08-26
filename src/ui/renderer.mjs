@@ -38,7 +38,7 @@ export function renderScene(target, side, t, P, sceneW, sceneH){
   }
 }
 
-export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
+export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc, dimBackground){
   if (!offscreen || offscreen.width !== sceneW || offscreen.height !== sceneH){
     if (win.OffscreenCanvas){
       offscreen = new win.OffscreenCanvas(sceneW, sceneH);
@@ -50,7 +50,7 @@ export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
     offCtx = offscreen.getContext("2d");
   }
   const img = offCtx.createImageData(sceneW, sceneH);
-  const dim = 0.25; // dim factor for non-pixel regions
+  const dim = dimBackground ? 0.25 : 1.0; // dim factor for non-pixel regions
   for (let i = 0, j = 0; i < sceneF32.length; i += 3, j += 4){
     img.data[j]   = Math.round(clamp01(sceneF32[i]) * 255 * dim);
     img.data[j+1] = Math.round(clamp01(sceneF32[i+1]) * 255 * dim);
@@ -63,7 +63,7 @@ export function drawScene(ctx, sceneF32, sceneW, sceneH, win, doc){
   ctx.drawImage(offscreen, 0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
+function drawSections(ctx, sceneF32, layout, sceneW, sceneH, offset = 0, span = layout.sampling.width){
   const Wc = ctx.canvas.width, Hc = ctx.canvas.height;
   ctx.lineWidth = 2;
   // Faint guideline for non-pixel wires
@@ -71,8 +71,8 @@ function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
   layout.runs.forEach(run => {
     run.sections.forEach(sec => {
       const y = sec.y * Hc;
-      const x0 = (sec.x0 / layout.sampling.width) * Wc;
-      const x1 = (sec.x1 / layout.sampling.width) * Wc;
+      const x0 = ((sec.x0 - offset) / span) * Wc;
+      const x1 = ((sec.x1 - offset) / span) * Wc;
 
       ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
 
@@ -97,13 +97,17 @@ export function frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layout
     renderScene(bothF, "both", t, P, sceneW * 2, sceneH);
     leftF.set(bothF.subarray(0, len));
     rightF.set(bothF.subarray(len));
+    drawScene(ctxL, leftF, sceneW, sceneH, win, doc, P.dimBackground);
+    if (layoutLeft)  drawSections(ctxL, bothF, layoutLeft, sceneW * 2, sceneH, 0, layoutLeft.sampling.width/2);
+    drawScene(ctxR, rightF, sceneW, sceneH, win, doc, P.dimBackground);
+    if (layoutRight) drawSections(ctxR, bothF, layoutRight, sceneW * 2, sceneH, layoutRight.sampling.width/2, layoutRight.sampling.width/2);
   } else {
     renderScene(leftF, "left", t, P, sceneW, sceneH);
     if (P.wallMode === "duplicate") rightF.set(leftF); else renderScene(rightF, "right", t, P, sceneW, sceneH);
+    drawScene(ctxL, leftF, sceneW, sceneH, win, doc, P.dimBackground);
+    if (layoutLeft)  drawSections(ctxL, leftF, layoutLeft, sceneW, sceneH);
+    drawScene(ctxR, rightF, sceneW, sceneH, win, doc, P.dimBackground);
+    if (layoutRight) drawSections(ctxR, rightF, layoutRight, sceneW, sceneH);
   }
-  drawScene(ctxL, leftF, sceneW, sceneH, win, doc);
-  if (layoutLeft)  drawSections(ctxL, leftF, layoutLeft, sceneW, sceneH);
-  drawScene(ctxR, rightF, sceneW, sceneH, win, doc);
-  if (layoutRight) drawSections(ctxR, rightF, layoutRight, sceneW, sceneH);
   win.requestAnimationFrame(()=>frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layoutRight, sceneW, sceneH));
 }

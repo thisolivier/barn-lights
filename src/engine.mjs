@@ -20,6 +20,7 @@ export const params = {
   fpsCap: 60,
   effect: "gradient",        // "gradient" | "solid" | "fire"
   wallMode: "duplicate",     // "duplicate" | "independent" | "extend"
+  dimBackground: true,
   effects: {},
   post: {
     brightness: 0.8,
@@ -106,23 +107,26 @@ function renderSceneExtended(t){
 
 // ------- build slices frame -------
 function buildSlicesFrame(frame, fps){
-  function sideSlices(sceneF32, layout){
+  function sideSlices(sceneF32, W, layout){
     const out = {};
     layout.runs.forEach(run => {
       run.sections.forEach(sec => {
-        const bytes = sliceSection(sceneF32, SCENE_W, SCENE_H, sec, layout.sampling);
+        const bytes = sliceSection(sceneF32, W, SCENE_H, sec, layout.sampling);
         out[sec.id] = { length: sec.led_count, rgb_b64: Buffer.from(bytes).toString("base64") };
       });
     });
     return out;
   }
+  const W = params.wallMode === "extend" ? SCENE_W * 2 : SCENE_W;
+  const sceneL = params.wallMode === "extend" ? bothF : leftF;
+  const sceneR = params.wallMode === "extend" ? bothF : rightF;
   return {
     ts: Math.floor(Date.now()/1000),
     frame, fps,
     format: "rgb8",
     sides: {
-      [layoutLeft.side]:  sideSlices(leftF,  layoutLeft),
-      [layoutRight.side]: sideSlices(rightF, layoutRight)
+      [layoutLeft.side]:  sideSlices(sceneL, W, layoutLeft),
+      [layoutRight.side]: sideSlices(sceneR, W, layoutRight)
     }
   };
 }
