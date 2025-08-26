@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/server.mjs",
+    "start": "node bin/engine.mjs",
     "test": "node --test --test-concurrency=1"
   },
   "dependencies": {
+    "grapick": "^0.1.13",
     "ws": "^8.18.0"
   },
   "devDependencies": {

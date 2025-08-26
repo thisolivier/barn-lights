@@ -31,6 +31,12 @@ const server = http.createServer((req, res) => {
     const p = path.join(UI_DIR, u.pathname.slice(1));
     return streamFile(p, "text/javascript", res);
   }
+  if (u.pathname.startsWith("/vendor/")) {
+    const p = path.join(__dirname, "../node_modules", u.pathname.slice(8));
+    const ext = path.extname(p);
+    const mime = ext === ".css" ? "text/css" : "text/javascript";
+    return streamFile(p, mime, res);
+  }
   if (u.pathname === "/favicon.ico") return streamFile(path.join(UI_DIR, "favicon.ico"), "image/x-icon", res);
   if (u.pathname.startsWith("/effects/")) {
     const p = path.join(__dirname, u.pathname.slice(1));
@@ -53,6 +59,13 @@ wss.on("connection", ws => {
   });
 });
 
-server.listen(8080, () => {
-  console.log("UI: http://localhost:8080");
-});
+export function startServer(port = 8080){
+  server.listen(port, () => {
+    console.error(`UI: http://localhost:${port}`);
+  });
+}
+
+const isMain = url.pathToFileURL(process.argv[1]).href === import.meta.url;
+if (isMain) {
+  startServer();
+}

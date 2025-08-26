@@ -36,9 +36,10 @@ function renderEffectControls(doc, P){
 function applyTop(doc, P){
   const fps = doc.getElementById('fpsCap');
   const fpsV = doc.getElementById('fpsCap_v');
-  if (fps){ fps.value = P.fpsCap; if (fpsV) fpsV.textContent = P.fpsCap; }
-  const mirror = doc.getElementById('mirrorWalls');
-  if (mirror) mirror.checked = !!P.mirrorWalls;
+  if (fps) {
+    fps.value = P.fpsCap;
+    if (fpsV) fpsV.textContent = P.fpsCap;
+  }
 }
 
 function applyPost(doc, P){
@@ -77,15 +78,15 @@ export function initUI(win, doc, P, send, onToggleFreeze){
 
   const fps = doc.getElementById('fpsCap');
   const fpsV = doc.getElementById('fpsCap_v');
-  if (fps){
+  if (fps) {
     fps.value = P.fpsCap;
     if (fpsV) fpsV.textContent = P.fpsCap;
-    fps.oninput = () => { const v = parseFloat(fps.value); P.fpsCap = v; if (fpsV) fpsV.textContent = v; send({ fpsCap: v }); };
-  }
-  const mirror = doc.getElementById('mirrorWalls');
-  if (mirror){
-    mirror.checked = !!P.mirrorWalls;
-    mirror.oninput = () => { P.mirrorWalls = mirror.checked; send({ mirrorWalls: mirror.checked }); };
+    fps.oninput = () => {
+      const v = parseFloat(fps.value);
+      P.fpsCap = v;
+      if (fpsV) fpsV.textContent = v;
+      send({ fpsCap: v });
+    };
   }
   for (const [key,val] of Object.entries(P.post)){
     if (key === 'tint') continue;
@@ -128,6 +129,7 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     if (e.key === '1') effect.value = 'gradient', effect.onchange();
     if (e.key === '2') effect.value = 'solid', effect.onchange();
     if (e.key === '3') effect.value = 'fire', effect.onchange();
+    if (e.key === '4') effect.value = 'fireShader', effect.onchange();
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
     if (e.key === ' ') onToggleFreeze();
   });
