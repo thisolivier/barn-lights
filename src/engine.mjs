@@ -1,5 +1,5 @@
 // src/engine.mjs
-import { readFile } from "fs/promises";
+import fs from "fs/promises";
 import path from "path";
 import url from "url";
 
@@ -46,8 +46,8 @@ export const params = {
 };
 
 // ------- load layouts -------
-async function loadLayout(name){
-  const raw = await readFile(path.join(CONFIG_DIR, `${name}.json`), "utf8");
+export async function loadLayout(name){
+  const raw = await fs.readFile(path.join(CONFIG_DIR, `${name}.json`), "utf8");
   const j = JSON.parse(raw);
   if (!j?.sampling?.width || !j?.sampling?.height) throw new Error(`${name}.json missing sampling.width/height`);
   return j;
