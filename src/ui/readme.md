@@ -7,7 +7,7 @@ Browser interface providing live preview and controls.
 - `connection.mjs` – WebSocket setup and message handling.
 - `ui-controls.mjs` – wires DOM controls to params and renders effect-specific widgets, including a wall mode selector (`duplicate`, `mirrorLR`, `extendCrazy`).
 - `controls/` – reusable widgets and `renderControls` helper.
-- `renderer.mjs` – scene generation and drawing. The preview dims non-pixel areas while showing LED samples in fully saturated, bright colors for clearer contrast.
+- `renderer.mjs` – scene generation and drawing. The preview lightly dims non-pixel areas and boosts LED samples without altering their relative intensity.
 
 The UI now includes a `fireShader` effect with adjustable speed, angle, flame height, and color gradient.
 
