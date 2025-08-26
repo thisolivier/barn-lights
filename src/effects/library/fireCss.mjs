@@ -1,21 +1,7 @@
+// Fire effect inspired by a CSS particle animation.
+// The number of flames mirrors the number of rising particles in the CSS version.
+
 import { clamp01 } from '../modifiers.mjs';
-
-// Value noise and FBM helpers
-function vnoise2(x, y){
-  return 0.5 + 0.5 * Math.sin((x * 12.9898 + y * 78.233) * 43758.5453);
-}
-
-function fbm(x, y, octaves = 4){
-  let amplitude = 0.5;
-  let frequency = 1.0;
-  let sum = 0.0;
-  for (let i = 0; i < octaves; i++){
-    sum += amplitude * vnoise2(x * frequency, y * frequency);
-    frequency *= 2.0;
-    amplitude *= 0.5;
-  }
-  return sum;
-}
 
 function lerp(a, b, t){
   return a + (b - a) * t;
@@ -43,12 +29,11 @@ function sampleGradient(stops, t){
   return stops[stops.length - 1].color;
 }
 
-export const id = 'fireShader';
-export const displayName = 'Fire Shader';
+export const id = 'fireCss';
+export const displayName = 'Fire CSS';
 export const defaultParams = {
-  speed: 0.3,
   angle: 0.0,
-  flameHeight: 1.5,
+  numFlames: 50,
   colors: [
     { pos: 0.0, color: [0.0, 0.0, 0.0] },
     { pos: 0.3, color: [1.0, 0.0, 0.0] },
@@ -57,17 +42,15 @@ export const defaultParams = {
   ],
 };
 export const paramSchema = {
-  speed: { type: 'number', min: 0, max: 5, step: 0.01, label: 'Speed' },
   angle: { type: 'number', min: -Math.PI, max: Math.PI, step: 0.01, label: 'Angle (rad)' },
-  flameHeight: { type: 'number', min: 0.1, max: 3, step: 0.01, label: 'Flame Height' },
+  numFlames: { type: 'number', min: 1, max: 50, step: 1, label: 'Number of Flames' },
   colors: { type: 'colorStops', label: 'Colors' },
 };
 
 export function render(sceneF32, W, H, t, params){
   const {
-    speed = defaultParams.speed,
     angle = defaultParams.angle,
-    flameHeight = defaultParams.flameHeight,
+    numFlames = defaultParams.numFlames,
     colors = defaultParams.colors,
   } = params || {};
 
@@ -87,16 +70,24 @@ export function render(sceneF32, W, H, t, params){
       u = rx + 0.5;
       v = ry + 0.5;
 
-      const noise = fbm(u * 3.0, (v * 3.0) - t * speed, 5);
-      const heightFactor = clamp01(1 - v * flameHeight);
-      const heat = clamp01(noise * heightFactor);
+      const height = clamp01(1 - v);
+      let heat = 0;
+      for (let i = 0; i < numFlames; i++){
+        const center = (i + 0.5) / numFlames;
+        const width = 1 / numFlames;
+        const dx = Math.abs(u - center);
+        const flame = Math.max(0, 1 - dx / width);
+        const flicker = 0.5 + 0.5 * Math.sin(t * 2 + i * 10 + v * 5);
+        heat = Math.max(heat, flame * height * flicker);
+      }
+
+      heat = clamp01(heat);
       const rgb = sampleGradient(sortedStops, heat);
 
-      const i = (y * W + x) * 3;
-      sceneF32[i] = rgb[0];
-      sceneF32[i + 1] = rgb[1];
-      sceneF32[i + 2] = rgb[2];
+      const idx = (y * W + x) * 3;
+      sceneF32[idx] = rgb[0];
+      sceneF32[idx + 1] = rgb[1];
+      sceneF32[idx + 2] = rgb[2];
     }
   }
 }
-
