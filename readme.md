@@ -8,9 +8,9 @@ Minimal Node + browser setup that:
 - serves a **live preview** with a light barn perspective and per-LED colored dots.
 
 ## Architecture
-- `bin/engine.mjs` invokes the engine's `start` function and streams NDJSON frames.
+- `bin/engine.mjs` launches the HTTP server and invokes the engine's `start` function, streaming NDJSON frames.
 - `src/engine.mjs` renders frames and exposes live parameters.
-- `src/server.mjs` serves the UI and relays WebSocket param updates.
+- `src/server.mjs` exports a `startServer` helper that serves the UI and relays WebSocket param updates.
 - `src/ui/` contains the browser preview and controls.
 
 Runtime parameters are grouped under `effects` for effect-specific settings
