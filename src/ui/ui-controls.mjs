@@ -2,6 +2,7 @@ import { effects } from '../effects/index.mjs';
 import { renderControls } from './controls/index.mjs';
 import { rgbToHex } from './controls/utils.mjs';
 import { initSpeedSlider } from './controls/speedSlider.mjs';
+import { refreshPresetDropdown } from './presets.mjs';
 
 let sendFn = null;
 let currentEffectId = null;
@@ -127,31 +128,24 @@ export function initUI(win, doc, P, send, onToggleFreeze){
 
   const presetInput = doc.getElementById('presetName');
   const presetList = doc.getElementById('presetList');
-  async function refreshPresets(){
-    if (!presetList) return;
-    const res = await win.fetch('/presets');
-    const names = await res.json();
-    presetList.innerHTML = '';
-    names.forEach(n => {
-      const opt = doc.createElement('option');
-      opt.value = n;
-      presetList.appendChild(opt);
-    });
+  if (presetList){
+    presetList.onchange = () => { if (presetInput) presetInput.value = presetList.value; };
+    refreshPresetDropdown(win, doc, presetList);
   }
-  refreshPresets();
   const saveBtn = doc.getElementById('savePreset');
   if (saveBtn){
     saveBtn.onclick = async () => {
-      const name = presetInput?.value.trim();
+      const name = presetInput?.value.trim() || presetList?.value;
       if (!name) return;
       await win.fetch(`/preset/save/${encodeURIComponent(name)}`, { method: 'POST' });
-      refreshPresets();
+      await refreshPresetDropdown(win, doc, presetList);
+      if (presetInput) presetInput.value = name;
     };
   }
   const loadBtn = doc.getElementById('loadPreset');
   if (loadBtn){
     loadBtn.onclick = async () => {
-      const name = presetInput?.value.trim();
+      const name = presetInput?.value.trim() || presetList?.value;
       if (!name) return;
       await win.fetch(`/preset/load/${encodeURIComponent(name)}`);
     };

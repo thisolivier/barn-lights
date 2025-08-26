@@ -7,6 +7,7 @@ Core runtime code for BarnLights Playbox:
 - `config-store.mjs` – read/write helpers for saving and loading effect presets.
 - `effects/` – effect implementations, registry and post-processing helpers.
 - `ui/` – browser UI for preview and controls, can modify the `params` which the engine renders.
+- `ui/presets.mjs` – helper to fetch preset names and update the UI dropdown.
 
 ## A note on the engine's use of effects
 
