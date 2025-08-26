@@ -117,7 +117,7 @@ export function initUI(win, doc, P, send, onToggleFreeze){
 
   const pitchEl = doc.getElementById('pitch');
   if (pitchEl){
-    updatePitch = initSpeedSlider(pitchEl, P, send, 'pitchSpeed', 256);
+    updatePitch = initSpeedSlider(pitchEl, P, send, 'pitchSpeed', 500);
   }
   const yawEl = doc.getElementById('yaw');
   if (yawEl){
