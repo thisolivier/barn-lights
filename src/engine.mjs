@@ -70,24 +70,28 @@ export function updateParams(patch){
 }
 
 // ------- engine buffers -------
-const leftF  = new Float32Array(SCENE_W * SCENE_H * 3);
-const rightF = new Float32Array(SCENE_W * SCENE_H * 3);
+// leftFrame and rightFrame hold RGB float data for each wall
+const leftFrame  = new Float32Array(SCENE_W * SCENE_H * 3);
+const rightFrame = new Float32Array(SCENE_W * SCENE_H * 3);
 
 // ------- scene render -------
+// Draw the active effect into the left frame, apply post-processing,
+// and clone the result for the right side
 function renderScene(t) {
   const effect = effects[params.effect] || effects["gradient"];
   const effectParams = params.effects[effect.id] || {};
-  effect.render(leftF, SCENE_W, SCENE_H, t, effectParams);
+  effect.render(leftFrame, SCENE_W, SCENE_H, t, effectParams);
 
   const post = params.post;
   for (const fn of postPipeline) {
-    fn(leftF, t, post, SCENE_W, SCENE_H);
+    fn(leftFrame, t, post, SCENE_W, SCENE_H);
   }
 
-  rightF.set(leftF);
+  rightFrame.set(leftFrame);
 }
 
 // ------- build slices frame -------
+// Convert the raw float frames into NDJSON ready pixel data
 function buildSlicesFrame(frame, fps){
   function sideSlices(sceneF32, layout){
     const out = {};
@@ -104,8 +108,8 @@ function buildSlicesFrame(frame, fps){
     frame, fps,
     format: "rgb8",
     sides: {
-      [layoutLeft.side]:  sideSlices(leftF,  layoutLeft),
-      [layoutRight.side]: sideSlices(rightF, layoutRight)
+      [layoutLeft.side]:  sideSlices(leftFrame,  layoutLeft),
+      [layoutRight.side]: sideSlices(rightFrame, layoutRight)
     }
   };
 }
@@ -113,6 +117,7 @@ function buildSlicesFrame(frame, fps){
 // ------- main loop -------
 let last, acc, frame;
 
+// tick: regulate frame rate, render, and emit LED data
 function tick(){
   const now = process.hrtime.bigint();
   const dt  = Number(now - last)/1e9;
@@ -138,6 +143,7 @@ function tick(){
   setImmediate(tick);
 }
 
+// start: initialize counters and kick off the main loop
 export function start(){
   last = process.hrtime.bigint();
   acc = 0;

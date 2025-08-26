@@ -27,6 +27,7 @@ export function toggleFreeze(){
   freeze = !freeze;
 }
 
+// renderScene: draw the active effect into a buffer and apply post-processing
 export function renderScene(target, t, P, sceneW, sceneH) {
   const effect = effects[P.effect] || effects["gradient"];
   const effectParams = P.effects[effect.id] || {};
@@ -88,13 +89,14 @@ function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
   });
 }
 
-export function frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layoutRight, sceneW, sceneH) {
+// frame: render once, draw to both previews, then schedule the next loop
+export function frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, P, layoutLeft, layoutRight, sceneW, sceneH) {
   const t = freeze ? 0 : win.performance.now() / 1000;
-  renderScene(leftF, t, P, sceneW, sceneH);
-  rightF.set(leftF);
-  drawScene(ctxL, leftF, sceneW, sceneH, win, doc);
-  if (layoutLeft) drawSections(ctxL, leftF, layoutLeft, sceneW, sceneH);
-  drawScene(ctxR, rightF, sceneW, sceneH, win, doc);
-  if (layoutRight) drawSections(ctxR, rightF, layoutRight, sceneW, sceneH);
-  win.requestAnimationFrame(() => frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layoutRight, sceneW, sceneH));
+  renderScene(leftFrame, t, P, sceneW, sceneH);
+  rightFrame.set(leftFrame);
+  drawScene(ctxL, leftFrame, sceneW, sceneH, win, doc);
+  if (layoutLeft) drawSections(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
+  drawScene(ctxR, rightFrame, sceneW, sceneH, win, doc);
+  if (layoutRight) drawSections(ctxR, rightFrame, layoutRight, sceneW, sceneH);
+  win.requestAnimationFrame(() => frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, P, layoutLeft, layoutRight, sceneW, sceneH));
 }
