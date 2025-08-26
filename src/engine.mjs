@@ -136,6 +136,7 @@ function tick(){
   setImmediate(tick);
 }
 
+// Only tick if we are running as the main process to prevent output swamping tests
 if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
   tick();
 }
