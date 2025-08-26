@@ -67,6 +67,12 @@ export function applyUI(doc, P){
 export function initUI(win, doc, P, send, onToggleFreeze){
   sendFn = send;
   const effect = doc.getElementById('effect');
+  if (effect && !effect.querySelector('option[value="fire2"]')){
+    const opt = doc.createElement('option');
+    opt.value = 'fire2';
+    opt.textContent = 'fire2';
+    effect.appendChild(opt);
+  }
   effect.value = P.effect;
   effect.onchange = () => { send({ effect: effect.value }); renderEffectControls(doc,P); };
 
@@ -114,6 +120,7 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     if (e.key === '1') effect.value = 'gradient', effect.onchange();
     if (e.key === '2') effect.value = 'solid', effect.onchange();
     if (e.key === '3') effect.value = 'fire', effect.onchange();
+    if (e.key === '4') effect.value = 'fire2', effect.onchange();
     if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
     if (e.key === ' ') onToggleFreeze();
   });

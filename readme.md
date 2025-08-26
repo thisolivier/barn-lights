@@ -1,7 +1,7 @@
 # BarnLights Playbox (test harness)
 
 Minimal Node + browser setup that:
-- renders gradients / solid / fire onto a 2D virtual scene per side,
+- renders gradients / solid / fire / fire shader onto a 2D virtual scene per side,
 - applies strobe / brightness / tint / roll / gamma,
 - samples per your layout JSON into per-row "slices",
 - **emits SLICES_NDJSON to stdout** (one line per frame),
@@ -14,6 +14,13 @@ Minimal Node + browser setup that:
 
 Runtime parameters are grouped under `effects` for effect-specific settings
 and `post` for modifiers like brightness, tint and strobe which can be applied ontop.
+
+### Effects
+
+- **gradient** – blend between two colors.
+- **solid** – constant color.
+- **fire** – CPU fire simulation.
+- **fire2** – WebGL fire shader with parameters `speed`, `angle`, `flameHeight` and `colorStops`.
 
 ## Quick start
 1. Open your terminal
