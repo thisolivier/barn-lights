@@ -135,4 +135,7 @@ function tick(){
 
   setImmediate(tick);
 }
-tick();
+
+if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+  tick();
+}
