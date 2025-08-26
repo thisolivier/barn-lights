@@ -1,12 +1,12 @@
 import { effects } from '../effects/index.mjs';
 import { renderControls } from './controls/index.mjs';
 import { rgbToHex } from './controls/utils.mjs';
-import { initRollPitchJoystick } from './controls/rollPitchJoystick.mjs';
-import { initYawSlider } from './controls/yawSlider.mjs';
+import { initSpeedSlider } from './controls/speedSlider.mjs';
 
 let sendFn = null;
 let currentEffectId = null;
-let updateRollPitch = null;
+let updateRoll = null;
+let updatePitch = null;
 let updateYaw = null;
 
 function renderEffectControls(doc, P){
@@ -58,12 +58,9 @@ function applyPost(doc, P){
     el.value = P.post.tint[i];
     if (span) span.textContent = P.post.tint[i];
   });
-  if (updateRollPitch){
-    updateRollPitch(P.post.pitchSpeed || 0, P.post.rollSpeed || 0);
-  }
-  if (updateYaw){
-    updateYaw(P.post.yawSpeed || 0);
-  }
+  if (updateRoll) updateRoll(P.post.rollSpeed || 0);
+  if (updatePitch) updatePitch(P.post.pitchSpeed || 0);
+  if (updateYaw) updateYaw(P.post.yawSpeed || 0);
 }
 
 export function applyUI(doc, P){
@@ -120,14 +117,17 @@ export function initUI(win, doc, P, send, onToggleFreeze){
     };
   });
 
-  const joy = doc.getElementById('rollPitch');
-  if (joy){
-    updateRollPitch = initRollPitchJoystick(joy, P, send);
+  const rollEl = doc.getElementById('roll');
+  if (rollEl){
+    updateRoll = initSpeedSlider(rollEl, P, send, 'rollSpeed', 128);
   }
-
+  const pitchEl = doc.getElementById('pitch');
+  if (pitchEl){
+    updatePitch = initSpeedSlider(pitchEl, P, send, 'pitchSpeed', 128);
+  }
   const yawEl = doc.getElementById('yaw');
   if (yawEl){
-    updateYaw = initYawSlider(yawEl, P, send);
+    updateYaw = initSpeedSlider(yawEl, P, send, 'yawSpeed', Math.PI);
   }
 
   win.addEventListener('keydown', (e) => {

@@ -1,5 +1,4 @@
-export function initYawSlider(el, P, send){
-  const MAX_YAW = Math.PI;
+export function initSpeedSlider(el, P, send, key, max){
   const handle = el.querySelector('.handle');
   const dead = 0.05;
 
@@ -8,9 +7,9 @@ export function initYawSlider(el, P, send){
   };
 
   const sendVal = (n) => {
-    if (Math.abs(n) < dead) n = 0;
-    P.post.yawSpeed = n * MAX_YAW;
-    send({ yawSpeed: P.post.yawSpeed });
+    const speed = Math.abs(n) < dead ? 0 : n * max;
+    P.post[key] = speed;
+    send({ [key]: speed });
   };
 
   let active = false;
@@ -28,7 +27,7 @@ export function initYawSlider(el, P, send){
 
   setPos(0);
 
-  return (yawSpeed) => {
-    setPos((yawSpeed || 0) / MAX_YAW);
+  return (val) => {
+    setPos((val || 0) / max);
   };
 }

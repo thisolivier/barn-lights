@@ -17,10 +17,16 @@ function applyGamma(sceneF32, t, post, W, H){
   _applyGamma(sceneF32, post.gamma);
 }
 
+let roll = 0, pitch = 0, yaw = 0, lastT = 0;
 function applyTransform(sceneF32, t, post, W, H){
-  const sx = ((t * post.pitchSpeed) % W + W) % W;
-  const sy = ((t * post.rollSpeed) % H + H) % H;
-  const ang = (t * post.yawSpeed) % (Math.PI * 2);
+  const dt = lastT ? t - lastT : 0;
+  lastT = t;
+  roll += post.rollSpeed * dt;
+  pitch += post.pitchSpeed * dt;
+  yaw += post.yawSpeed * dt;
+  const sx = ((pitch % W) + W) % W;
+  const sy = ((roll % H) + H) % H;
+  const ang = yaw % (Math.PI * 2);
   _transformScene(sceneF32, W, H, sx, sy, ang);
 }
 

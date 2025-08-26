@@ -10,8 +10,7 @@ Dynamic UI widgets for effect parameters.
 - `colorStops.mjs` – editable list of color/position pairs.
 
 Additional widgets support motion controls used by the General panel:
-- `rollPitchJoystick.mjs` – 2D joystick for roll and pitch speeds with a 5% dead zone.
-- `yawSlider.mjs` – horizontal slider with center dead zone for yaw rotation.
+- `speedSlider.mjs` – horizontal slider with a 5% center dead zone for roll, pitch, and yaw speeds.
 
 Utilities for RGB conversions live in `utils.mjs`.
 
