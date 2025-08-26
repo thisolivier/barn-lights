@@ -33,21 +33,29 @@ export async function run(docArg = globalThis.document){
 
   const params = {};
 
-  initConnection(win,
+  // Establish a WebSocket connection and describe how incoming messages are used.
+  initConnection(
+    win,
+    // Stage 1: handle initial scene setup from the server.
     (m) => {
+      // Store default parameters and allocate buffers for both walls.
       Object.assign(params, m.params);
       const sceneW = m.scene.w;
       const sceneH = m.scene.h;
       const leftFrame  = new Float32Array(sceneW * sceneH * 3);
       const rightFrame = new Float32Array(sceneW * sceneH * 3);
+      // Build the UI and start rendering frames if canvases are available.
       initUI(win, doc, params, send);
-      if (ctxL && ctxR) frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneW, sceneH);
-      else setStatus(doc, "Preview unavailable");
+      if (ctxL && ctxR){
+        frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneW, sceneH);
+      } else setStatus(doc, "Preview unavailable");
     },
+    // Stage 2: apply live parameter updates pushed by the server.
     (m) => {
       Object.assign(params, m.params);
       applyUI(doc, params);
     },
+    // Stage 3: display connection errors or status updates.
     (msg) => setStatus(doc, msg)
   );
 }
