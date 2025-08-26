@@ -16,8 +16,8 @@ Runtime parameters are grouped under `effects` for effect-specific settings
 and `post` for modifiers like brightness, tint and strobe which can be applied ontop.
 The top-level `wallMode` parameter chooses how the two walls are combined.
 It can render each wall separately (`duplicate`), mirror the left wall into
-the right horizontally (`mirrorLR`) or vertically (`mirrorTB`), or act as a
-single wide scene spanning both sides (`extend`).
+the right horizontally (`mirrorLR`), or act as a
+single wide scene spanning both sides (`extendCrazy`).
 
 ## Quick start
 1. Open your terminal

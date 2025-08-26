@@ -4,7 +4,7 @@ import path from "path";
 import url from "url";
 
 import { effects } from "./effects/index.mjs";
-import { sliceSection, copyBuffer, flipHorizontal, flipVertical } from "./effects/modifiers.mjs";
+import { sliceSection, copyBuffer, flipHorizontal } from "./effects/modifiers.mjs";
 import { postPipeline, registerPostModifier } from "./effects/post.mjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -19,7 +19,7 @@ export const SCENE_W = 512, SCENE_H = 128; // virtual canvas per side
 export const params = {
   fpsCap: 60,
   effect: "gradient",        // "gradient" | "solid" | "fire"
-  wallMode: "duplicate",     // "duplicate" | "mirrorLR" | "mirrorTB" | "extend"
+  wallMode: "duplicate",     // "duplicate" | "mirrorLR" | "extendCrazy"
   effects: {},
   post: {
     brightness: 0.8,
@@ -148,16 +148,12 @@ function tick(){
 
     // Stage A+B for left/right
     switch (params.wallMode) {
-      case "extend":
+      case "extendCrazy":
         renderSceneExtended(t);
         break;
       case "mirrorLR":
         renderSceneForSide("left", t);
         flipHorizontal(rightF, leftF, SCENE_W, SCENE_H);
-        break;
-      case "mirrorTB":
-        renderSceneForSide("left", t);
-        flipVertical(rightF, leftF, SCENE_W, SCENE_H);
         break;
       case "duplicate":
       default:

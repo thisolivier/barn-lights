@@ -5,13 +5,18 @@ export function copyBuffer(dst, src){
 }
 
 export function flipHorizontal(dst, src, W, H){
-  for (let y = 0; y < H; y++){
-    for (let x = 0; x < W; x++){
-      const iSrc = (y*W + x)*3;
-      const iDst = (y*W + (W-1-x))*3;
-      dst[iDst]     = src[iSrc];
-      dst[iDst + 1] = src[iSrc + 1];
-      dst[iDst + 2] = src[iSrc + 2];
+  const same = dst === src;
+  const row = same ? new Float32Array(W * 3) : null;
+  for (let y = 0; y < H; y++) {
+    const off = y * W * 3;
+    if (same) row.set(src.subarray(off, off + W * 3));
+    const s = same ? row : src.subarray(off, off + W * 3);
+    for (let x = 0; x < W; x++) {
+      const j = x * 3;
+      const k = (W - 1 - x) * 3;
+      dst[off + k]     = s[j];
+      dst[off + k + 1] = s[j + 1];
+      dst[off + k + 2] = s[j + 2];
     }
   }
 }

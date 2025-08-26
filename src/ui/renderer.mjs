@@ -1,5 +1,5 @@
 import { effects } from "../effects/index.mjs";
-import { sliceSection, clamp01, copyBuffer, flipHorizontal, flipVertical } from "../effects/modifiers.mjs";
+import { sliceSection, clamp01, copyBuffer, flipHorizontal } from "../effects/modifiers.mjs";
 import { postPipeline, registerPostModifier } from "../effects/post.mjs";
 
 export { registerPostModifier };
@@ -92,7 +92,7 @@ function drawSections(ctx, sceneF32, layout, sceneW, sceneH){
 export function frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layoutRight, sceneW, sceneH){
   const t = freeze ? 0 : win.performance.now() / 1000;
   switch (P.wallMode) {
-    case "extend": {
+    case "extendCrazy": {
       const len = leftF.length;
       if (!bothF || bothF.length !== len * 2) bothF = new Float32Array(len * 2);
       renderScene(bothF, "both", t, P, sceneW * 2, sceneH);
@@ -103,10 +103,6 @@ export function frame(win, doc, ctxL, ctxR, leftF, rightF, P, layoutLeft, layout
     case "mirrorLR":
       renderScene(leftF, "left", t, P, sceneW, sceneH);
       flipHorizontal(rightF, leftF, sceneW, sceneH);
-      break;
-    case "mirrorTB":
-      renderScene(leftF, "left", t, P, sceneW, sceneH);
-      flipVertical(rightF, leftF, sceneW, sceneH);
       break;
     case "duplicate":
     default:

@@ -14,14 +14,17 @@ export const paramSchema = {
   gradPhase: { type: 'number', min: 0, max: 1, step: 0.001 },
 };
 
-export function render(sceneF32, W, H, t, params){
-  const { gradStart, gradEnd, gradPhase=0 } = params;
-  for(let y=0;y<H;y++){
-    for(let x=0;x<W;x++){
-      const u = (x/W + gradPhase) % 1;
+export function render(sceneF32, W, H, t, params, side){
+  const { gradStart, gradEnd, gradPhase = 0 } = params;
+  const spanW = side === 'both' ? W / 2 : W;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const u = (x / spanW + gradPhase) % 1;
       const rgb = mix3(gradStart, gradEnd, u);
-      const i=(y*W+x)*3;
-      sceneF32[i]=rgb[0]; sceneF32[i+1]=rgb[1]; sceneF32[i+2]=rgb[2];
+      const i = (y * W + x) * 3;
+      sceneF32[i] = rgb[0];
+      sceneF32[i + 1] = rgb[1];
+      sceneF32[i + 2] = rgb[2];
     }
   }
 }
