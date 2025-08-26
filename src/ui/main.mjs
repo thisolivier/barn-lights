@@ -1,5 +1,5 @@
 import { initConnection, send } from "./connection.mjs";
-import { initUI, applyUI } from "./ui-controls.mjs";
+import { initUI, applyUI } from "./controls-logic.mjs";
 import { frame } from "./preview-renderer.mjs";
 
 function setStatus(doc, msg){
