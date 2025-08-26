@@ -9,4 +9,6 @@ Browser interface providing live preview and controls.
 - `controls/` – reusable widgets and `renderControls` helper.
 - `renderer.mjs` – scene generation and drawing (relies on render functions within each effect).
 
+The UI now includes a `fireShader` effect with adjustable speed, angle, flame height, and color gradient.
+
 `ui-controls.mjs` now interacts with namespaced params (`effects` and `post`).
