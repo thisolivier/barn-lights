@@ -47,15 +47,16 @@ export function frame(
   win,
   ctxL, ctxR,
   leftFrame, rightFrame,
-  P,
+  getParams,
   layoutLeft, layoutRight,
   sceneW, sceneH
 ) {
   const t = win.performance.now() / 1000;
-  renderFrames(leftFrame, rightFrame, P, t);
+  const paramObject = getParams();
+  renderFrames(leftFrame, rightFrame, paramObject, t);
   drawSceneToCanvas(ctxL, leftFrame, sceneW, sceneH);
   if (layoutLeft) drawSectionsToCanvas(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
   drawSceneToCanvas(ctxR, rightFrame, sceneW, sceneH);
   if (layoutRight) drawSectionsToCanvas(ctxR, rightFrame, layoutRight, sceneW, sceneH);
-  win.requestAnimationFrame(() => frame(win, ctxL, ctxR, leftFrame, rightFrame, P, layoutLeft, layoutRight, sceneW, sceneH));
+  win.requestAnimationFrame(() => frame(win, ctxL, ctxR, leftFrame, rightFrame, getParams, layoutLeft, layoutRight, sceneW, sceneH));
 }

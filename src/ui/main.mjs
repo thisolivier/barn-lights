@@ -1,4 +1,3 @@
-import { initUI, applyUI } from "./controls-logic.mjs";
 import { frame } from "./renderer.mjs";
 
 function setStatus(doc, msg){
@@ -16,7 +15,7 @@ async function loadLightLayout(win, doc, side){
   }
 }
 
-export async function run(docArg = globalThis.document){
+export async function run(applyLocal, getParams, docArg = globalThis.document){
   const doc = docArg;
   const win = docArg.defaultView || globalThis;
 
@@ -30,28 +29,22 @@ export async function run(docArg = globalThis.document){
   const canvR = doc.getElementById("right");
   const ctxR = canvR.getContext("2d");
 
-  const params = {};
-  let sendFunction = () => {};
-  const setSend = (fn) => { sendFunction = fn; };
-
   const onInit = (msg) => {
-    Object.assign(params, msg.params);
+    applyLocal(msg.params);
     const sceneWidth = msg.scene.w;
     const sceneHeight = msg.scene.h;
     const leftFrame  = new Float32Array(sceneWidth * sceneHeight * 3);
     const rightFrame = new Float32Array(sceneWidth * sceneHeight * 3);
-    initUI(win, doc, params, (obj) => sendFunction(obj));
     if (ctxL && ctxR){
-        frame(win, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneWidth, sceneHeight);
+        frame(win, ctxL, ctxR, leftFrame, rightFrame, getParams, layoutLeft, layoutRight, sceneWidth, sceneHeight);
     } else setStatus(doc, "Preview unavailable");
   };
 
   const onParams = (msg) => {
-    Object.assign(params, msg.params);
-    applyUI(doc, params);
+    applyLocal(msg.params);
   };
 
   const onStatus = (statusMessage) => setStatus(doc, statusMessage);
 
-  return { onInit, onParams, onStatus, setSend };
+  return { onInit, onParams, onStatus };
 }
