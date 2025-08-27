@@ -31,10 +31,16 @@
         0
       ]
     },
-    "fire": {
-      "fireSpeed": 0.35,
-      "fireScale": 2.2,
-      "fireIntensity": 1.2
+    "noise": {
+      "noiseSpeed": 0.35,
+      "noiseScale": 2.2,
+      "noiseIntensity": 1.2,
+      "noiseStops": [
+        { "pos": 0, "color": [0, 0, 0] },
+        { "pos": 0.33, "color": [1, 0, 0] },
+        { "pos": 0.66, "color": [1, 0.5, 0] },
+        { "pos": 1, "color": [1, 1, 1] }
+      ]
     },
     "fireShader": {
       "speed": 0.3,
