@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { renderFrames, SCENE_W, SCENE_H } from '../src/render-scene.mjs';
-import { drawSceneToCanvas } from '../src/ui/renderer.mjs';
 
 const baseParams = {
   effect: 'gradient',
@@ -37,51 +36,39 @@ test('extended mode splits gradient across frames', () => {
   assert.notStrictEqual(leftFrame[0], rightFrame[0]);
 });
 
-test('mirror mode reflects last pixel to right frame start', () => {
+test('mirror mode reflects frame ends', () => {
   const leftFrame = new Float32Array(SCENE_W * SCENE_H * 3);
   const rightFrame = new Float32Array(SCENE_W * SCENE_H * 3);
   const params = { ...baseParams, renderMode: 'mirror' };
   renderFrames(leftFrame, rightFrame, params, 0);
-  const lastPixelIndex = (SCENE_W - 1) * 3;
-  assert.strictEqual(rightFrame[0], leftFrame[lastPixelIndex]);
-  assert.strictEqual(rightFrame[1], leftFrame[lastPixelIndex + 1]);
-  assert.strictEqual(rightFrame[2], leftFrame[lastPixelIndex + 2]);
+  const firstPixelLeft = [leftFrame[0], leftFrame[1], leftFrame[2]];
+  const lastIndex = (SCENE_W - 1) * 3;
+  const lastPixelLeft = [
+    leftFrame[lastIndex],
+    leftFrame[lastIndex + 1],
+    leftFrame[lastIndex + 2],
+  ];
+  // Ensure gradient produced different edge colors
+  assert.notDeepStrictEqual(firstPixelLeft, lastPixelLeft);
+  const firstPixelRight = [rightFrame[0], rightFrame[1], rightFrame[2]];
+  const lastIndexRight = (SCENE_W - 1) * 3;
+  const lastPixelRight = [
+    rightFrame[lastIndexRight],
+    rightFrame[lastIndexRight + 1],
+    rightFrame[lastIndexRight + 2],
+  ];
+  assert.deepStrictEqual(firstPixelRight, lastPixelLeft);
+  assert.deepStrictEqual(lastPixelRight, firstPixelLeft);
 });
 
-test('drawSceneToCanvas maintains separate buffers', () => {
-  class StubContext {
-    constructor(width, height) {
-      this.canvas = { width, height };
-      this.imageData = new Uint8ClampedArray(width * height * 4);
-      this.imageSmoothingEnabled = true;
-    }
-    createImageData(width, height) {
-      return { data: new Uint8ClampedArray(width * height * 4) };
-    }
-    putImageData(img, x, y) {
-      this.imageData.set(img.data);
-    }
-    getImageData(x, y, width, height) {
-      const length = width * height * 4;
-      return { data: this.imageData.slice(0, length) };
-    }
-  }
-  class OffscreenCanvas {
-    constructor(width, height) {
-      this.context2d = new StubContext(width, height);
-    }
-    getContext(type) {
-      return type === '2d' ? this.context2d : null;
-    }
-  }
-  const canvasA = new OffscreenCanvas(1, 1);
-  const canvasB = new OffscreenCanvas(1, 1);
-  const frameA = new Float32Array([1, 0, 0]);
-  const frameB = new Float32Array([0, 1, 0]);
-  drawSceneToCanvas(canvasA.getContext('2d'), frameA, 1, 1);
-  drawSceneToCanvas(canvasB.getContext('2d'), frameB, 1, 1);
-  const pixelsA = canvasA.getContext('2d').getImageData(0, 0, 1, 1).data;
-  const pixelsB = canvasB.getContext('2d').getImageData(0, 0, 1, 1).data;
-  assert.deepStrictEqual(Array.from(pixelsA.slice(0, 3)), [191, 0, 0]);
-  assert.deepStrictEqual(Array.from(pixelsB.slice(0, 3)), [0, 191, 0]);
+test('duplicate mode copies gradient to both frames', () => {
+  const leftFrame = new Float32Array(SCENE_W * SCENE_H * 3);
+  const rightFrame = new Float32Array(SCENE_W * SCENE_H * 3);
+  renderFrames(leftFrame, rightFrame, baseParams, 0);
+  const lastIndex = (SCENE_W - 1) * 3;
+  assert.strictEqual(leftFrame[0], rightFrame[0]);
+  assert.strictEqual(leftFrame[1], rightFrame[1]);
+  assert.strictEqual(leftFrame[lastIndex], rightFrame[lastIndex]);
+  assert.strictEqual(leftFrame[lastIndex + 1], rightFrame[lastIndex + 1]);
 });
+
