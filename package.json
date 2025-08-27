@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node bin/engine.mjs",
     "test": "node --test --test-concurrency=1",
     "build:ui": "webpack"
   },

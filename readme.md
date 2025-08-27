@@ -14,8 +14,9 @@ Minimal Node + browser setup that:
 3. Execute the commands (node v20-22 required)
 ```bash
 npm install
-npm start
+node bin/engine.mjs
 ```
+   Running the engine directly avoids npm's script banner lines so the NDJSON stream begins immediately.
 4.  Go to `localhost:8080` in your browser
 
 ## Running tests

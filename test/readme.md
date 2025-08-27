@@ -3,6 +3,7 @@
 Automated checks for BarnLights Playbox:
 
 - `engine.test.mjs` – validates engine output and config section lengths.
+- `engine-initial-output.test.mjs` – verifies the first stdout line from the engine is NDJSON.
 - `engine-layout.test.mjs` – ensures layout loading rejects malformed files.
 - `config.test.mjs` – verifies configuration LED totals and section bounds.
 - `preset.test.mjs` – saves and loads effect presets and their preview images.
