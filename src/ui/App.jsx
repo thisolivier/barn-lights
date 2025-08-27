@@ -10,18 +10,31 @@ export default function App() {
   const [runtime, setRuntime] = useState(null);
   const [layouts, setLayouts] = useState({ left: null, right: null });
   const [scene, setScene] = useState({ width: 0, height: 0 });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleReady = useCallback((runtimeValue) => {
     setRuntime(runtimeValue);
   }, []);
 
   useEffect(() => {
-    if (runtime) {
-      run(runtime.applyLocal, setScene).then(result => {
+    if (!runtime) return;
+    let cancelled = false;
+    run(runtime.applyLocal, setScene)
+      .then((result) => {
+        if (cancelled) return;
         setHandlers(result);
         setLayouts({ left: result.layoutLeft, right: result.layoutRight });
+        if (!result.layoutLeft || !result.layoutRight) {
+          setErrorMessage('Failed to load layouts');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to initialize', error);
+        if (!cancelled) setErrorMessage('Failed to initialize application');
       });
-    }
+    return () => {
+      cancelled = true;
+    };
   }, [runtime]);
 
   const { onInit, onParams, onStatus } = handlers || {
@@ -30,10 +43,20 @@ export default function App() {
     onStatus: () => {}
   };
 
-  return (
-    <ParamsProvider send={sendFunction} onReady={handleReady}>
-      <WebSocketProvider onInit={onInit} onParams={onParams} onError={onStatus} setSend={setSendFunction}>
-        {runtime && layouts.left && layouts.right && scene.width && scene.height ? (
+  const handleWebSocketError = useCallback((message) => {
+    onStatus(message);
+    setErrorMessage(message);
+  }, [onStatus]);
+
+  let content = null;
+  if (errorMessage) {
+    content = <div>{errorMessage}</div>;
+  } else if (!handlers) {
+    content = <div>Loading...</div>;
+  } else {
+    content = (
+      <WebSocketProvider onInit={onInit} onParams={onParams} onError={handleWebSocketError} setSend={setSendFunction}>
+        {layouts.left && layouts.right && scene.width && scene.height ? (
           <Renderer
             getParams={runtime.getParams}
             layoutLeft={layouts.left}
@@ -41,8 +64,16 @@ export default function App() {
             sceneWidth={scene.width}
             sceneHeight={scene.height}
           />
-        ) : null}
+        ) : (
+          <div>Loading preview...</div>
+        )}
       </WebSocketProvider>
+    );
+  }
+
+  return (
+    <ParamsProvider send={sendFunction} onReady={handleReady}>
+      {content}
     </ParamsProvider>
   );
 }
