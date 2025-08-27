@@ -1,4 +1,3 @@
-import { initConnection, send } from "./connection.mjs";
 import { initUI, applyUI } from "./controls-logic.mjs";
 import { frame } from "./renderer.mjs";
 
@@ -32,26 +31,27 @@ export async function run(docArg = globalThis.document){
   const ctxR = canvR.getContext("2d");
 
   const params = {};
+  let sendFunction = () => {};
+  const setSend = (fn) => { sendFunction = fn; };
 
-  // Establish a WebSocket connection and describe how incoming messages are used.
-  const onInit = (m) => {
-    // Store default parameters and allocate buffers for both walls.
-    Object.assign(params, m.params);
-    const sceneW = m.scene.w;
-    const sceneH = m.scene.h;
-    const leftFrame  = new Float32Array(sceneW * sceneH * 3);
-    const rightFrame = new Float32Array(sceneW * sceneH * 3);
-    // Build the UI and start rendering frames if canvases are available.
-    initUI(win, doc, params, send);
+  const onInit = (msg) => {
+    Object.assign(params, msg.params);
+    const sceneWidth = msg.scene.w;
+    const sceneHeight = msg.scene.h;
+    const leftFrame  = new Float32Array(sceneWidth * sceneHeight * 3);
+    const rightFrame = new Float32Array(sceneWidth * sceneHeight * 3);
+    initUI(win, doc, params, (obj) => sendFunction(obj));
     if (ctxL && ctxR){
-        frame(win, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneW, sceneH);
+        frame(win, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneWidth, sceneHeight);
     } else setStatus(doc, "Preview unavailable");
   };
-  const onParams = (m) => {
-    Object.assign(params, m.params);
+
+  const onParams = (msg) => {
+    Object.assign(params, msg.params);
     applyUI(doc, params);
   };
-  const onStatus = (msg) => setStatus(doc, msg);
-  // Delay connection slightly so automated tests waiting for network idle can finish loading assets.
-  setTimeout(() => initConnection(win, onInit, onParams, onStatus), 600);
+
+  const onStatus = (statusMessage) => setStatus(doc, statusMessage);
+
+  return { onInit, onParams, onStatus, setSend };
 }
