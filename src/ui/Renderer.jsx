@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { renderFrame } from './renderer.mjs';
+import { renderFrame, clearImageCaches } from './renderer.mjs';
 
 export default function Renderer({ getParams, layoutLeft, layoutRight, sceneWidth, sceneHeight }) {
   const canvasLeftRef = useRef(null);
@@ -26,6 +26,7 @@ export default function Renderer({ getParams, layoutLeft, layoutRight, sceneWidt
 
     return () => {
       if (frameRequest) win.cancelAnimationFrame(frameRequest);
+      clearImageCaches();
     };
   }, [getParams, layoutLeft, layoutRight, sceneWidth, sceneHeight]);
 
