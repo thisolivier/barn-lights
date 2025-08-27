@@ -10,6 +10,7 @@ export default {
   output: {
     filename: 'bundle.js',
     path: resolve(currentDirectory, 'src/ui/dist'),
+    publicPath: '/',
     clean: true
   },
   resolve: {
@@ -31,7 +32,8 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: resolve(currentDirectory, 'src/ui/index.html')
+      template: resolve(currentDirectory, 'src/ui/index.html'),
+      scriptLoading: 'blocking'
     })
   ]
 };
