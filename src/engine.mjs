@@ -17,6 +17,7 @@ export { SCENE_W, SCENE_H };
 export const params = {
   fpsCap: 60,
   effect: "gradient",        // "gradient" | "solid" | "fire"
+  renderMode: "duplicate",   // "duplicate" | "extended" | "mirror"
   effects: {},
   post: {
     brightness: 0.8,
@@ -72,6 +73,7 @@ export function updateParams(patch){
 // leftFrame and rightFrame hold RGB float data for each wall
 const leftFrame  = new Float32Array(SCENE_W * SCENE_H * 3);
 const rightFrame = new Float32Array(SCENE_W * SCENE_H * 3);
+let extendedFrame = new Float32Array(SCENE_W * 2 * SCENE_H * 3);
 
 
 // ------- build slices frame -------
@@ -116,9 +118,32 @@ function tick(){
     const t = Number(now)/1e9;
     acc = 0;
 
-    // Render scene and duplicate
-    renderScene(leftFrame, t, params);
-    rightFrame.set(leftFrame);
+    // Render scene based on renderMode
+    if (params.renderMode === "extended") {
+      renderScene(extendedFrame, t, params, SCENE_W * 2, SCENE_H);
+      const rowStride = SCENE_W * 6; // 2 * SCENE_W * 3
+      for (let y = 0; y < SCENE_H; y++) {
+        const row = y * rowStride;
+        leftFrame.set(extendedFrame.subarray(row, row + SCENE_W * 3), y * SCENE_W * 3);
+        rightFrame.set(extendedFrame.subarray(row + SCENE_W * 3, row + SCENE_W * 6), y * SCENE_W * 3);
+      }
+    } else {
+      renderScene(leftFrame, t, params);
+      if (params.renderMode === "mirror") {
+        const rowStride = SCENE_W * 3;
+        for (let y = 0; y < SCENE_H; y++) {
+          for (let x = 0; x < SCENE_W; x++) {
+            const src = y * rowStride + x * 3;
+            const dst = y * rowStride + (SCENE_W - 1 - x) * 3;
+            rightFrame[dst] = leftFrame[src];
+            rightFrame[dst + 1] = leftFrame[src + 1];
+            rightFrame[dst + 2] = leftFrame[src + 2];
+          }
+        }
+      } else {
+        rightFrame.set(leftFrame);
+      }
+    }
 
     // Emit SLICES_NDJSON to stdout
     const out = buildSlicesFrame(frame++, cap);

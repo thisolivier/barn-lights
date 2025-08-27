@@ -5,12 +5,13 @@ import { postPipeline } from "./effects/post.mjs";
 export const SCENE_W = 512, SCENE_H = 128;
 
 // renderScene: draw the active effect into a buffer and apply post-processing
-export function renderScene(sceneF32, t, P){
+// Accepts optional scene dimensions for modes that render wider scenes.
+export function renderScene(sceneF32, t, P, sceneW = SCENE_W, sceneH = SCENE_H){
   const effect = effects[P.effect] || effects["gradient"];
   const effectParams = P.effects[effect.id] || {};
-  effect.render(sceneF32, SCENE_W, SCENE_H, t, effectParams);
+  effect.render(sceneF32, sceneW, sceneH, t, effectParams);
   const post = P.post;
   for (const fn of postPipeline){
-    fn(sceneF32, t, post, SCENE_W, SCENE_H);
+    fn(sceneF32, t, post, sceneW, sceneH);
   }
 }

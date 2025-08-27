@@ -1,9 +1,8 @@
 import { sliceSection, clamp01 } from "../effects/modifiers.mjs";
-import { renderScene } from "../render-scene.mjs";
 
 let offscreen = null, offCtx = null;
 
-function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
+export function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
   if (!offscreen || offscreen.width !== sceneW || offscreen.height !== sceneH){
     if (win.OffscreenCanvas){
       offscreen = new win.OffscreenCanvas(sceneW, sceneH);
@@ -28,7 +27,7 @@ function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
   ctx.drawImage(offscreen, 0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
+export function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
   const Wc = ctx.canvas.width, Hc = ctx.canvas.height;
   ctx.lineWidth = 6;
   // Faint guideline for non-pixel wires
@@ -56,22 +55,3 @@ function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
   });
 }
 
-// frame: render once, draw to both previews, then schedule the next loop
-export function frame(
-  win,
-  doc,
-  ctxL, ctxR,
-  leftFrame, rightFrame,
-  P,
-  layoutLeft, layoutRight,
-  sceneW, sceneH
-) {
-  const t = win.performance.now() / 1000;
-  renderScene(leftFrame, t, P);
-  rightFrame.set(leftFrame);
-  drawSceneToCanvas(ctxL, leftFrame, sceneW, sceneH, win, doc);
-  if (layoutLeft) drawSectionsToCanvas(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
-  drawSceneToCanvas(ctxR, rightFrame, sceneW, sceneH, win, doc);
-  if (layoutRight) drawSectionsToCanvas(ctxR, rightFrame, layoutRight, sceneW, sceneH);
-  win.requestAnimationFrame(() => frame(win, doc, ctxL, ctxR, leftFrame, rightFrame, P, layoutLeft, layoutRight, sceneW, sceneH));
-}

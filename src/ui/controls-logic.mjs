@@ -80,6 +80,8 @@ function applyPost(doc, P){
 export function applyUI(doc, P){
   const effect = doc.getElementById('effect');
   if (effect && effect.value !== P.effect) effect.value = P.effect;
+  const renderSel = doc.getElementById('renderMode');
+  if (renderSel && renderSel.value !== P.renderMode) renderSel.value = P.renderMode;
   applyFpsCap(doc,P);
   applyPost(doc,P);
   renderEffectControls(doc,P);
@@ -103,6 +105,12 @@ export function initUI(win, doc, P, send){
     }
     effect.value = P.effect;
     effect.onchange = () => { send({ effect: effect.value }); renderEffectControls(doc,P); };
+  }
+
+  const renderSel = doc.getElementById('renderMode');
+  if (renderSel){
+    renderSel.value = P.renderMode;
+    renderSel.onchange = () => { P.renderMode = renderSel.value; send({ renderMode: renderSel.value }); };
   }
 
   const fps = doc.getElementById('fpsCap');
