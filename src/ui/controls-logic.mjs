@@ -58,7 +58,7 @@ function applyFpsCap(doc, P){
  */
 function applyPost(doc, P){
   for (const [key,val] of Object.entries(P.post)){
-    if (key === 'tint') continue;
+    if (key === 'tint' || key === 'pitch' || key === 'yaw') continue;
     const el = doc.getElementById(key);
     const span = doc.getElementById(key + '_v');
     if (!el) continue;
@@ -148,10 +148,13 @@ export function initUI(win, doc, P, send){
   });
 
   const pitchEl = doc.getElementById('pitch');
+  const pitchDeg = doc.getElementById('pitchDeg');
   if (pitchEl){
     updatePitch = initSpeedSlider(pitchEl, P, send, 'pitchSpeed', 500);
   }
+
   const yawEl = doc.getElementById('yaw');
+  const yawDeg = doc.getElementById('yawDeg');
   if (yawEl){
     updateYaw = initSpeedSlider(yawEl, P, send, 'yawSpeed', Math.PI);
   }
@@ -161,6 +164,13 @@ export function initUI(win, doc, P, send){
     renderMode.value = P.renderMode;
     renderMode.onchange = () => { P.renderMode = renderMode.value; send({ renderMode: renderMode.value }); };
   }
+  
+  const updateAngles = () => {
+    if (pitchDeg) pitchDeg.value = Math.abs(P.post.pitch || 0).toFixed(1);
+    if (yawDeg) yawDeg.value = Math.abs(P.post.yaw || 0).toFixed(1);
+    win.requestAnimationFrame(updateAngles);
+  };
+  updateAngles();
 
   const presetInput = doc.getElementById('presetName');
   const presetList = doc.getElementById('presetList');
@@ -186,18 +196,6 @@ export function initUI(win, doc, P, send){
       await win.fetch(`/preset/load/${encodeURIComponent(name)}`);
     };
   }
-
-  win.addEventListener('keydown', (e) => {
-    if (e.key >= '1' && e.key <= '9'){
-      const idx = e.key.charCodeAt(0) - '1'.charCodeAt(0);
-      const ids = Object.keys(effects);
-      if (idx < ids.length && effect){
-        effect.value = ids[idx];
-        effect.onchange();
-      }
-    }
-    if (e.key.toLowerCase() === 'b') send({ brightness: 0 });
-  });
 
   applyUI(doc, P);
 }
