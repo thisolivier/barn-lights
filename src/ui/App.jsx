@@ -1,22 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { run } from './main.mjs';
 import { WebSocketProvider } from './WebSocketContext.js';
+import { ParamsProvider } from './ParamsContext.js';
 
 export default function App() {
   const [handlers, setHandlers] = useState(null);
+  const [sendFunction, setSendFunction] = useState(() => {});
+  const [runtime, setRuntime] = useState(null);
 
-  useEffect(() => {
-    run().then(setHandlers);
+  const handleReady = useCallback((runtimeValue) => {
+    setRuntime(runtimeValue);
   }, []);
 
-  if (!handlers) return null;
+  useEffect(() => {
+    if (runtime) {
+      run(runtime.applyLocal, runtime.getParams).then(setHandlers);
+    }
+  }, [runtime]);
 
-  const { onInit, onParams, onStatus, setSend } = handlers;
+  const { onInit, onParams, onStatus } = handlers || {
+    onInit: () => {},
+    onParams: () => {},
+    onStatus: () => {}
+  };
 
   return (
-    <WebSocketProvider onInit={onInit} onParams={onParams} onError={onStatus} setSend={setSend}>
-      {null}
-    </WebSocketProvider>
+    <ParamsProvider send={sendFunction} onReady={handleReady}>
+      <WebSocketProvider onInit={onInit} onParams={onParams} onError={onStatus} setSend={setSendFunction}>
+        {null}
+      </WebSocketProvider>
+    </ParamsProvider>
   );
 }
 
