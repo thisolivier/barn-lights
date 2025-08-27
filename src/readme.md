@@ -3,7 +3,7 @@
 Core runtime code for BarnLights Playbox:
 
 - `render-scene.mjs` – shared scene rendering and post-processing helpers.
-- `engine.mjs` – side‑effect‑free render loop exposing `params`; call `start()` to emit SLICES_NDJSON.
+- `engine.mjs` – side‑effect‑free render loop exposing `params` (including `renderMode`); call `start()` to emit SLICES_NDJSON.
 - `server.mjs` – HTTP/WebSocket server serving the UI and applying param updates.
 - `config-store.mjs` – read/write helpers for saving and loading effect presets.
 - `effects/` – effect implementations, registry and post-processing helpers.

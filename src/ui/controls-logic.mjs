@@ -82,6 +82,8 @@ export function applyUI(doc, P){
   if (effect && effect.value !== P.effect) effect.value = P.effect;
   applyFpsCap(doc,P);
   applyPost(doc,P);
+  const rm = doc.getElementById('renderMode');
+  if (rm && rm.value !== P.renderMode) rm.value = P.renderMode;
   renderEffectControls(doc,P);
 }
 
@@ -152,6 +154,12 @@ export function initUI(win, doc, P, send){
   const yawEl = doc.getElementById('yaw');
   if (yawEl){
     updateYaw = initSpeedSlider(yawEl, P, send, 'yawSpeed', Math.PI);
+  }
+
+  const renderMode = doc.getElementById('renderMode');
+  if (renderMode){
+    renderMode.value = P.renderMode;
+    renderMode.onchange = () => { P.renderMode = renderMode.value; send({ renderMode: renderMode.value }); };
   }
 
   const presetInput = doc.getElementById('presetName');

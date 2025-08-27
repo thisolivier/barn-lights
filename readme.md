@@ -17,11 +17,11 @@ Minimal Node + browser setup that:
 
 Runtime parameters are grouped under `effects` for effect-specific settings
 and `post` for modifiers like brightness, tint and strobe which can be applied on top.
-A single scene is rendered each frame and copied to both walls.
+A `renderMode` parameter controls how scenes map to the two walls: `duplicate` renders once for both, `extended` renders a double-width scene and splits it, and `mirror` flips the scene for the right wall.
 
 ## Frame pipeline
 1. The engine renders the active effect into a floating point RGB buffer (`leftFrame`).
-2. Post-processing modifiers run on that buffer and the result is duplicated to `rightFrame`.
+2. Post-processing modifiers run on that buffer and the result is combined into `rightFrame` according to `renderMode`.
 3. Each frame is sliced according to the configured layouts and emitted as base64-encoded `rgb8` NDJSON.
 4. The browser preview reuses these frame buffers to draw the scene and per-LED indicators.
 
