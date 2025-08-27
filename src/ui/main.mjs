@@ -1,4 +1,4 @@
-import { frame } from "./renderer.mjs";
+// Rendering is handled by a React component; this module only manages layout and handlers.
 
 function setStatus(doc, msg){
   const el = doc.getElementById("status");
@@ -15,7 +15,7 @@ async function loadLightLayout(win, doc, side){
   }
 }
 
-export async function run(applyLocal, getParams, docArg = globalThis.document){
+export async function run(applyLocal, setSceneInfo, docArg = globalThis.document){
   const doc = docArg;
   const win = docArg.defaultView || globalThis;
 
@@ -24,20 +24,9 @@ export async function run(applyLocal, getParams, docArg = globalThis.document){
     loadLightLayout(win, doc, "right")
   ]);
 
-  const canvL = doc.getElementById("left");
-  const ctxL = canvL.getContext("2d");
-  const canvR = doc.getElementById("right");
-  const ctxR = canvR.getContext("2d");
-
   const onInit = (msg) => {
     applyLocal(msg.params);
-    const sceneWidth = msg.scene.w;
-    const sceneHeight = msg.scene.h;
-    const leftFrame  = new Float32Array(sceneWidth * sceneHeight * 3);
-    const rightFrame = new Float32Array(sceneWidth * sceneHeight * 3);
-    if (ctxL && ctxR){
-        frame(win, ctxL, ctxR, leftFrame, rightFrame, getParams, layoutLeft, layoutRight, sceneWidth, sceneHeight);
-    } else setStatus(doc, "Preview unavailable");
+    setSceneInfo({ width: msg.scene.w, height: msg.scene.h });
   };
 
   const onParams = (msg) => {
@@ -46,5 +35,5 @@ export async function run(applyLocal, getParams, docArg = globalThis.document){
 
   const onStatus = (statusMessage) => setStatus(doc, statusMessage);
 
-  return { onInit, onParams, onStatus };
+  return { onInit, onParams, onStatus, layoutLeft, layoutRight };
 }

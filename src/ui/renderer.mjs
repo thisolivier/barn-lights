@@ -43,7 +43,7 @@ function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
 }
 
 // frame: render once, draw to both previews, then schedule the next loop
-export function frame(
+export function renderFrame(
   win,
   ctxL, ctxR,
   leftFrame, rightFrame,
@@ -58,5 +58,4 @@ export function frame(
   if (layoutLeft) drawSectionsToCanvas(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
   drawSceneToCanvas(ctxR, rightFrame, sceneW, sceneH);
   if (layoutRight) drawSectionsToCanvas(ctxR, rightFrame, layoutRight, sceneW, sceneH);
-  win.requestAnimationFrame(() => frame(win, ctxL, ctxR, leftFrame, rightFrame, getParams, layoutLeft, layoutRight, sceneW, sceneH));
 }
