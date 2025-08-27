@@ -25,7 +25,7 @@ const server = http.createServer(async (req, res) => {
   if (u.pathname === "/") return streamFile(path.join(UI_DIR, "index.html"), "text/html", res);
   if (u.pathname === "/preview.mjs") return streamFile(path.join(UI_DIR, "preview.mjs"), "text/javascript", res);
   if (u.pathname === "/main.mjs") return streamFile(path.join(UI_DIR, "main.mjs"), "text/javascript", res);
-  if (u.pathname === "/connection.mjs") return streamFile(path.join(UI_DIR, "connection.mjs"), "text/javascript", res);
+  if (u.pathname === "/useWebSocket.js") return streamFile(path.join(UI_DIR, "useWebSocket.js"), "text/javascript", res);
   if (u.pathname === "/controls-logic.mjs") return streamFile(path.join(UI_DIR, "controls-logic.mjs"), "text/javascript", res);
   if (u.pathname === "/presets.mjs") return streamFile(path.join(UI_DIR, "presets.mjs"), "text/javascript", res);
   if (u.pathname === "/renderer.mjs") return streamFile(path.join(UI_DIR, "renderer.mjs"), "text/javascript", res);

@@ -7,7 +7,7 @@ Browser interface providing a live preview above a panel of controls.
 - `main.mjs` – entry point for JS logic, wiring modules together, exposes a `run` function.
 - `App.jsx` – top-level React component that invokes `run`.
 - `main.jsx` – React entry rendering `<App />`.
-- `connection.mjs` – WebSocket setup and message handling.
+- `useWebSocket.js` – React hook providing WebSocket connection state, send helper and context provider.
 - `controls-logic.mjs` – wires DOM controls to params and renders effect-specific widgets.
 - `renderer.mjs` – uses `renderFrames` to draw the scene for both walls and overlay per-LED indicators.
 - `presets.mjs` – handles saving/retreiving configuration and listing the saved options with thumbnails.

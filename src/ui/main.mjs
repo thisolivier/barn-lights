@@ -1,4 +1,3 @@
-import { initConnection, send } from "./connection.mjs";
 import { initUI, applyUI } from "./controls-logic.mjs";
 import { frame } from "./renderer.mjs";
 
@@ -33,25 +32,25 @@ export async function run(docArg = globalThis.document){
 
   const params = {};
 
-  // Establish a WebSocket connection and describe how incoming messages are used.
-  const onInit = (m) => {
+  // Describe how incoming WebSocket messages are used.
+  const onInit = (message, sendFunction) => {
     // Store default parameters and allocate buffers for both walls.
-    Object.assign(params, m.params);
-    const sceneW = m.scene.w;
-    const sceneH = m.scene.h;
-    const leftFrame  = new Float32Array(sceneW * sceneH * 3);
-    const rightFrame = new Float32Array(sceneW * sceneH * 3);
+    Object.assign(params, message.params);
+    const sceneWidth = message.scene.w;
+    const sceneHeight = message.scene.h;
+    const leftFrame  = new Float32Array(sceneWidth * sceneHeight * 3);
+    const rightFrame = new Float32Array(sceneWidth * sceneHeight * 3);
     // Build the UI and start rendering frames if canvases are available.
-    initUI(win, doc, params, send);
+    initUI(win, doc, params, sendFunction);
     if (ctxL && ctxR){
-        frame(win, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneW, sceneH);
+        frame(win, ctxL, ctxR, leftFrame, rightFrame, params, layoutLeft, layoutRight, sceneWidth, sceneHeight);
     } else setStatus(doc, "Preview unavailable");
   };
-  const onParams = (m) => {
-    Object.assign(params, m.params);
+  const onParams = (message) => {
+    Object.assign(params, message.params);
     applyUI(doc, params);
   };
-  const onStatus = (msg) => setStatus(doc, msg);
-  // Delay connection slightly so automated tests waiting for network idle can finish loading assets.
-  setTimeout(() => initConnection(win, onInit, onParams, onStatus), 600);
+  const onStatus = (statusMessage) => setStatus(doc, statusMessage);
+
+  return { onInit, onParams, onError: onStatus };
 }
