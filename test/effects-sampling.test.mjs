@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'assert/strict';
-import { bilinearSampleRGB, sliceSection } from '../src/effects/modifiers.mjs';
+import { bilinearSampleRGB, sliceSection, transformScene } from '../src/effects/modifiers.mjs';
 
 // helper to compare arrays with numbers precisely
 const eq = (a, b) => assert.deepEqual(a.map(n => +n.toFixed(5)), b.map(n => +n.toFixed(5)));
@@ -36,4 +36,11 @@ test('sliceSection returns expected byte colors', () => {
   assert.equal(bytes.length, 9);
   const mid = Math.round(0.5 * 255);
   assert.deepEqual(Array.from(bytes), [255, 0, 0, mid, mid, 0, 0, 255, 0]);
+});
+
+test('transformScene wraps shifts by full width', () => {
+  const src = sceneF32.slice();
+  const shifted = Float32Array.from(src);
+  transformScene(shifted, W, H, W, 0, 0);
+  eq(Array.from(shifted), Array.from(src));
 });
