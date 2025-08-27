@@ -3,24 +3,6 @@ import { renderScene } from "../render-scene.mjs";
 
 let offscreen = null, offCtx = null;
 
-// Helper for drawing LED sections
-function fullBrightRGB(r, g, b){
-  const min = Math.min(r, g, b);
-  const max = Math.max(r, g, b);
-  if (max === min){
-    return [255, 255, 255];
-  }
-  r -= min; g -= min; b -= min;
-  const span = max - min;
-  const scale = span > 0 ? 255 / span : 0;
-  return [
-    Math.round(r * scale),
-    Math.round(g * scale),
-    Math.round(b * scale)
-  ];
-}
-
-
 function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
   if (!offscreen || offscreen.width !== sceneW || offscreen.height !== sceneH){
     if (win.OffscreenCanvas){
@@ -48,25 +30,27 @@ function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
 
 function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
   const Wc = ctx.canvas.width, Hc = ctx.canvas.height;
-  ctx.lineWidth = 0.5;
+  ctx.lineWidth = 6;
   // Faint guideline for non-pixel wires
-  ctx.strokeStyle = "rgba(255,255,255,0.2)";
+  ctx.strokeStyle = "rgba(255,255,255,0.9)";
   layout.runs.forEach(run => {
     run.sections.forEach(sec => {
       const y = sec.y * Hc;
       const x0 = (sec.x0 / layout.sampling.width) * Wc;
       const x1 = (sec.x1 / layout.sampling.width) * Wc;
 
-      ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x0 - 3, y); ctx.lineTo(x1 + 3, y); ctx.stroke();
 
       const bytes = sliceSection(sceneF32, sceneW, sceneH, sec, layout.sampling);
       for (let i = 0; i < sec.led_count; i++){
         const t = sec.led_count > 1 ? i / (sec.led_count - 1) : 0;
         const x = x0 + (x1 - x0) * t;
         const j = i * 3;
-        const [r, g, b] = fullBrightRGB(bytes[j], bytes[j+1], bytes[j+2]);
+        const r = bytes[j];
+        const g = bytes[j+1];
+        const b = bytes[j+2];
         ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.fillRect(x-1, y-1, 2, 2);
+        ctx.fillRect(x-2, y-2, 4, 4);
       }
     });
   });
