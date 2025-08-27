@@ -5,7 +5,7 @@ Browser interface providing live preview and controls.
 - `index.html` – control layout and canvas elements grouped into Effect, General, Orientation, Strobe and Tint sections. Pitch and yaw speed sliders live under Orientation while read-only numeric inputs display their absolute angles in degrees. The effect selector is populated at runtime from the shared effects map.
 - `main.mjs` – entry point for JS logic, wiring modules together, exposes a 'run' function.
 - `connection.mjs` – WebSocket setup and message handling.
-- `controls-logic.mjs` – wires DOM controls to params, renders effect-specific widgets and saves presets with preview thumbnails.
-- `preview-renderer.mjs` – scene generation and drawing, duplicating a single scene to both canvases.
+- `controls-logic.mjs` – wires DOM controls to params and renders effect-specific widgets.
+- `renderer.mjs` – uses `renderFrames` to draw the scene for both walls and overlay per-LED indicators.
 - `presets.mjs` – handles saving/retreiving configuration and listing the saved options.
 - `subviews/` – reusable widgets and `renderControls` helper.

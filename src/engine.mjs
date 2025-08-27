@@ -5,7 +5,7 @@ import url from "url";
 
 import { effects } from "./effects/index.mjs";
 import { sliceSection } from "./effects/modifiers.mjs";
-import { renderScene, SCENE_W, SCENE_H } from "./render-scene.mjs";
+import { renderFrames, SCENE_W, SCENE_H } from "./render-scene.mjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -75,7 +75,6 @@ export function updateParams(patch){
 // leftFrame and rightFrame hold RGB float data for each wall
 const leftFrame  = new Float32Array(SCENE_W * SCENE_H * 3);
 const rightFrame = new Float32Array(SCENE_W * SCENE_H * 3);
-const extendedFrame = new Float32Array(SCENE_W * 2 * SCENE_H * 3);
 
 
 // ------- build slices frame -------
@@ -119,32 +118,7 @@ function tick(){
   if (acc >= step) {
     const t = Number(now)/1e9;
     acc = 0;
-    const mode = params.renderMode;
-    if (mode === "extended") {
-      const W = SCENE_W * 2;
-      renderScene(extendedFrame, W, SCENE_H, t, params);
-      for (let y = 0; y < SCENE_H; y++) {
-        const src = y * W * 3;
-        const dst = y * SCENE_W * 3;
-        leftFrame.set(extendedFrame.subarray(src, src + SCENE_W * 3), dst);
-        rightFrame.set(extendedFrame.subarray(src + SCENE_W * 3, src + W * 3), dst);
-      }
-    } else {
-      renderScene(leftFrame, SCENE_W, SCENE_H, t, params);
-      if (mode === "mirror") {
-        for (let y = 0; y < SCENE_H; y++) {
-          for (let x = 0; x < SCENE_W; x++) {
-            const src = ((SCENE_H - 1 - y) * SCENE_W + (SCENE_W - 1 - x)) * 3;
-            const dst = (y * SCENE_W + x) * 3;
-            rightFrame[dst] = leftFrame[src];
-            rightFrame[dst + 1] = leftFrame[src + 1];
-            rightFrame[dst + 2] = leftFrame[src + 2];
-          }
-        }
-      } else {
-        rightFrame.set(leftFrame);
-      }
-    }
+    renderFrames(leftFrame, rightFrame, params, t);
 
     // Emit SLICES_NDJSON to stdout
     const out = buildSlicesFrame(frame++, cap);
