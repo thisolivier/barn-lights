@@ -5,7 +5,7 @@ import path from "path";
 import url from "url";
 
 import { params, updateParams, layoutLeft, layoutRight, SCENE_W, SCENE_H } from "./engine.mjs";
-import { savePreset, loadPreset, listPresets } from "./config-store.mjs";
+import { savePreset, loadPreset, listPresetsWithImages } from "./config-store.mjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const UI_DIR = path.join(__dirname, "ui");
@@ -47,7 +47,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (u.pathname === "/layout/left") return sendJson(layoutLeft, res);
   if (u.pathname === "/layout/right") return sendJson(layoutRight, res);
-  if (u.pathname === "/presets") return sendJson(await listPresets(), res);
+  if (u.pathname === "/presets") return sendJson(await listPresetsWithImages(), res);
   if (u.pathname.startsWith("/preset/save/")) {
     const name = u.pathname.slice("/preset/save/".length);
     const chunks = [];

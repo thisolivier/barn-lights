@@ -17,6 +17,9 @@
   #left { transform: rotateY(15deg) skewY(-2deg); }
   #right{ transform: rotateY(-15deg) skewY(2deg);  }
   .panel { display:flex; flex-direction:row; gap:var(--gap); align-items:flex-start; flex-wrap:wrap; }
+  .presets { display:flex; gap:8px; overflow-x:auto; }
+  .preset { display:flex; flex-direction:column; align-items:center; border:none; background:none; padding:0; cursor:pointer; }
+  .preset img { width:64px; height:32px; object-fit:cover; border-radius:4px; }
   .hslider { width:180px; height:20px; position:relative; border:1px solid #ccc; border-radius:10px; background:#f3f3f3; touch-action:none; }
   .hslider .handle { position:absolute; width:12px; height:12px; border-radius:50%; background:#666; top:50%; transform:translate(-50%,-50%); left:50%; }
 </style>
@@ -32,6 +35,15 @@
 </div>
 <div class="panel">
   <fieldset>
+    <legend>Presets</legend>
+    <div class="presets" id="presetList"></div>
+    <div class="row">
+      <input id="presetName" placeholder="name">
+      <button id="savePreset">Save</button>
+    </div>
+  </fieldset>
+
+  <fieldset>
     <legend>Effect</legend>
     <div class="row">
       <label>Effect
@@ -39,16 +51,6 @@
       </label>
     </div>
     <div class="row" id="effectControls"></div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Presets</legend>
-    <div class="row">
-      <input id="presetName" placeholder="name">
-      <select id="presetList"></select>
-      <button id="savePreset">Save</button>
-      <button id="loadPreset">Load</button>
-    </div>
   </fieldset>
 
     <fieldset>

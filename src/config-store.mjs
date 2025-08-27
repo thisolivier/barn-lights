@@ -15,6 +15,26 @@ export async function listPresets(){
   }
 }
 
+export async function listPresetsWithImages(){
+  try {
+    const files = await fs.readdir(PRESET_DIR);
+    const presets = [];
+    for (const f of files){
+      if (!f.endsWith('.json')) continue;
+      const name = f.slice(0, -5);
+      let img = null;
+      try {
+        const buf = await fs.readFile(path.join(PRESET_DIR, `${name}.png`));
+        img = `data:image/png;base64,${buf.toString('base64')}`;
+      } catch {}
+      presets.push({ name, img });
+    }
+    return presets;
+  } catch {
+    return [];
+  }
+}
+
 export async function savePreset(name, params, imageBuf){
   await fs.mkdir(PRESET_DIR, { recursive: true });
   const p = path.join(PRESET_DIR, `${name}.json`);
