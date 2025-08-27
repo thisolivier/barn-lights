@@ -50,7 +50,10 @@ const server = http.createServer(async (req, res) => {
   if (u.pathname === "/presets") return sendJson(await listPresets(), res);
   if (u.pathname.startsWith("/preset/save/")) {
     const name = u.pathname.slice("/preset/save/".length);
-    await savePreset(name, params);
+    const chunks = [];
+    for await (const c of req) chunks.push(c);
+    const buf = chunks.length ? Buffer.concat(chunks) : null;
+    await savePreset(name, params, buf);
     return sendJson({ ok: true }, res);
   }
   if (u.pathname.startsWith("/preset/load/")) {
