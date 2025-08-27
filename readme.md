@@ -22,6 +22,7 @@ npm start
 ```bash
 npm test
 ```
+Set `BARN_LIGHTS_SKIP_WEB_TEST=1` to skip the browser preview test when running in environments without browser support (Agents use this).
 
 ## Output contract
 

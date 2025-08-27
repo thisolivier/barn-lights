@@ -8,6 +8,7 @@
 - - Prefer file lengths of less than 200 lines (light preference).
 - - Add readme.md files at the root of each module to describe the architecture and subcomponents.
 - - Ensure readme files are updated at the end of each task.
+- Skip tests which require a browser (see readme)
 
 Your work is deeply appreciated.
 
