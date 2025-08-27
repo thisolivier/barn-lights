@@ -10,7 +10,7 @@ Browser interface providing a live preview above a panel of controls.
 - `main.jsx` – React entry rendering `<App />`.
 - `useWebSocket.js` – React hook for managing WebSocket connections.
 - `WebSocketContext.js` – context provider exposing the connection to components.
-- `ParamsContext.js` – React context backed by a `useReducer` hook mirroring the runtime parameter object. Dispatching patches updates state and sends them over the WebSocket.
+- `ParamsContext.js` – React context backed by a `useReducer` hook mirroring the runtime parameter object. Dispatching patches updates state and sends them over the WebSocket. It invokes its `onReady` callback only when the WebSocket send function changes to avoid repeated initialization.
 - `renderer.mjs` – draws a single frame for both walls and overlays per‑LED indicators.
 - `presets.mjs` – handles saving/retreiving configuration and listing the saved options with thumbnails.
 - `subviews/` – reusable widgets and `renderControls` helper.
