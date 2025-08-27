@@ -1,4 +1,5 @@
 import { clamp01 } from '../modifiers.mjs';
+import { sortColorStops, sampleGradient } from './gradient-utils.mjs';
 
 // Value noise and FBM helpers
 function vnoise2(x, y){
@@ -17,31 +18,6 @@ function fbm(x, y, octaves = 4){
   return sum;
 }
 
-function lerp(a, b, t){
-  return a + (b - a) * t;
-}
-
-function mixColors(a, b, t){
-  return [
-    lerp(a[0], b[0], t),
-    lerp(a[1], b[1], t),
-    lerp(a[2], b[2], t),
-  ];
-}
-
-function sampleGradient(stops, t){
-  if (!stops.length) return [t, t, t];
-  if (t <= stops[0].pos) return stops[0].color;
-  for (let i = 0; i < stops.length - 1; i++){
-    const a = stops[i];
-    const b = stops[i + 1];
-    if (t <= b.pos){
-      const f = (t - a.pos) / Math.max(1e-6, b.pos - a.pos);
-      return mixColors(a.color, b.color, f);
-    }
-  }
-  return stops[stops.length - 1].color;
-}
 
 export const id = 'fireShader';
 export const displayName = 'Fire Shader';
@@ -73,7 +49,7 @@ export function render(sceneF32, W, H, t, params){
 
   const cosA = Math.cos(angle);
   const sinA = Math.sin(angle);
-  const sortedStops = [...colors].sort((a, b) => a.pos - b.pos);
+  const sortedStops = sortColorStops(colors);
 
   for (let y = 0; y < H; y++){
     for (let x = 0; x < W; x++){
