@@ -1,12 +1,12 @@
 # BarnLights Playbox (test harness)
 
 Minimal Node + browser setup that:
-- renders gradients / solid / fire onto a 2D virtual scene,
+- renders gradients / solid / noise onto a 2D virtual scene,
 - applies strobe / brightness / tint / pitch/yaw transforms / gamma,
 - samples per your layout JSON into per-row "slices",
 - **emits SLICES_NDJSON to stdout** (one line per frame),
 - serves a **live preview** with a light barn perspective and per-LED colored dots.
-- allows saving and loading effect presets through the UI with a thumbnail panel of saved presets, storing a preview image with each.
+- allows saving and loading effect presets through the UI with a thumbnail panel of saved presets, storing a preview image with each. Saving with an existing name replaces the previous preset.
 
 ## Quick start
 1. Open your terminal
