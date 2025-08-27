@@ -35,9 +35,10 @@ export function renderFrames(leftFrame, rightFrame, P, t){
   } else {
     renderScene(leftFrame, SCENE_W, SCENE_H, t, P);
     if (mode === "mirror"){
+      // flip horizontally: reflect x but keep y aligned
       for (let y = 0; y < SCENE_H; y++){
         for (let x = 0; x < SCENE_W; x++){
-          const src = ((SCENE_H - 1 - y) * SCENE_W + (SCENE_W - 1 - x)) * 3;
+          const src = (y * SCENE_W + (SCENE_W - 1 - x)) * 3;
           const dst = (y * SCENE_W + x) * 3;
           rightFrame[dst] = leftFrame[src];
           rightFrame[dst + 1] = leftFrame[src + 1];

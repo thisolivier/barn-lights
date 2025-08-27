@@ -17,7 +17,7 @@ Minimal Node + browser setup that:
 
 Runtime parameters are grouped under `effects` for effect-specific settings
 and `post` for modifiers like brightness, tint and strobe which can be applied on top.
-A `renderMode` parameter controls how scenes map to the two walls: `duplicate` renders once for both, `extended` renders a double-width scene and splits it, and `mirror` flips the scene for the right wall. Both the engine and browser preview rely on `renderFrames` to handle these modes.
+A `renderMode` parameter controls how scenes map to the two walls: `duplicate` renders once for both, `extended` renders a double-width scene and splits it, and `mirror` flips the scene horizontally for the right wall. Both the engine and browser preview rely on `renderFrames` to handle these modes.
 
 ## Frame pipeline
 1. `renderFrames` draws the active effect, applies post-processing and fills the `leftFrame` and `rightFrame` buffers based on `renderMode`.
