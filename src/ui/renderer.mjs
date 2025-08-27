@@ -1,42 +1,55 @@
 import { sliceSection, clamp01 } from "../effects/modifiers.mjs";
 import { renderFrames } from "../render-scene.mjs";
 
-export function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH){
-  const img = ctx.createImageData(sceneW, sceneH);
-  const dim = 0.75; // dim factor for non-pixel regions
-  for (let i = 0, j = 0; i < sceneF32.length; i += 3, j += 4){
-    img.data[j]   = Math.round(clamp01(sceneF32[i]) * 255 * dim);
-    img.data[j+1] = Math.round(clamp01(sceneF32[i+1]) * 255 * dim);
-    img.data[j+2] = Math.round(clamp01(sceneF32[i+2]) * 255 * dim);
-    img.data[j+3] = 255;
-  }
-  ctx.imageSmoothingEnabled = false;
-  ctx.putImageData(img, 0, 0);
+let leftImage = null;
+let rightImage = null;
+
+export function clearImageCaches() {
+  leftImage = null;
+  rightImage = null;
 }
 
-function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
-  const Wc = ctx.canvas.width, Hc = ctx.canvas.height;
-  ctx.lineWidth = 6;
+export function drawSceneToCanvas(canvasContext, sceneFloat32, sceneWidth, sceneHeight, side){
+  let image = side === "left" ? leftImage : rightImage;
+  if (!image || image.width !== sceneWidth || image.height !== sceneHeight) {
+    image = canvasContext.createImageData(sceneWidth, sceneHeight);
+    if (side === "left") leftImage = image; else rightImage = image;
+  }
+  const dimFactor = 0.75; // dim factor for non-pixel regions
+  const pixelArray = image.data;
+  for (let floatIndex = 0, byteIndex = 0; floatIndex < sceneFloat32.length; floatIndex += 3, byteIndex += 4){
+    pixelArray[byteIndex]   = Math.round(clamp01(sceneFloat32[floatIndex]) * 255 * dimFactor);
+    pixelArray[byteIndex+1] = Math.round(clamp01(sceneFloat32[floatIndex+1]) * 255 * dimFactor);
+    pixelArray[byteIndex+2] = Math.round(clamp01(sceneFloat32[floatIndex+2]) * 255 * dimFactor);
+    pixelArray[byteIndex+3] = 255;
+  }
+  canvasContext.imageSmoothingEnabled = false;
+  canvasContext.putImageData(image, 0, 0);
+}
+
+function drawSectionsToCanvas(canvasContext, sceneFloat32, layout, sceneWidth, sceneHeight){
+  const canvasWidth = canvasContext.canvas.width, canvasHeight = canvasContext.canvas.height;
+  canvasContext.lineWidth = 6;
   // Faint guideline for non-pixel wires
-  ctx.strokeStyle = "rgba(255,255,255,0.9)";
+  canvasContext.strokeStyle = "rgba(255,255,255,0.9)";
   layout.runs.forEach(run => {
-    run.sections.forEach(sec => {
-      const y = sec.y * Hc;
-      const x0 = (sec.x0 / layout.sampling.width) * Wc;
-      const x1 = (sec.x1 / layout.sampling.width) * Wc;
+    run.sections.forEach(section => {
+      const y = section.y * canvasHeight;
+      const x0 = (section.x0 / layout.sampling.width) * canvasWidth;
+      const x1 = (section.x1 / layout.sampling.width) * canvasWidth;
 
-      ctx.beginPath(); ctx.moveTo(x0 - 3, y); ctx.lineTo(x1 + 3, y); ctx.stroke();
+      canvasContext.beginPath(); canvasContext.moveTo(x0 - 3, y); canvasContext.lineTo(x1 + 3, y); canvasContext.stroke();
 
-      const bytes = sliceSection(sceneF32, sceneW, sceneH, sec, layout.sampling);
-      for (let i = 0; i < sec.led_count; i++){
-        const t = sec.led_count > 1 ? i / (sec.led_count - 1) : 0;
-        const x = x0 + (x1 - x0) * t;
-        const j = i * 3;
-        const r = bytes[j];
-        const g = bytes[j+1];
-        const b = bytes[j+2];
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.fillRect(x-2, y-2, 4, 4);
+      const bytes = sliceSection(sceneFloat32, sceneWidth, sceneHeight, section, layout.sampling);
+      for (let index = 0; index < section.led_count; index++){
+        const fraction = section.led_count > 1 ? index / (section.led_count - 1) : 0;
+        const x = x0 + (x1 - x0) * fraction;
+        const byteIndex = index * 3;
+        const r = bytes[byteIndex];
+        const g = bytes[byteIndex+1];
+        const b = bytes[byteIndex+2];
+        canvasContext.fillStyle = `rgb(${r},${g},${b})`;
+        canvasContext.fillRect(x-2, y-2, 4, 4);
       }
     });
   });
@@ -44,18 +57,18 @@ function drawSectionsToCanvas(ctx, sceneF32, layout, sceneW, sceneH){
 
 // frame: render once, draw to both previews, then schedule the next loop
 export function renderFrame(
-  win,
-  ctxL, ctxR,
+  browserWindow,
+  contextLeft, contextRight,
   leftFrame, rightFrame,
   getParams,
   layoutLeft, layoutRight,
-  sceneW, sceneH
+  sceneWidth, sceneHeight
 ) {
-  const t = win.performance.now() / 1000;
+  const timeSeconds = browserWindow.performance.now() / 1000;
   const paramObject = getParams();
-  renderFrames(leftFrame, rightFrame, paramObject, t);
-  drawSceneToCanvas(ctxL, leftFrame, sceneW, sceneH);
-  if (layoutLeft) drawSectionsToCanvas(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
-  drawSceneToCanvas(ctxR, rightFrame, sceneW, sceneH);
-  if (layoutRight) drawSectionsToCanvas(ctxR, rightFrame, layoutRight, sceneW, sceneH);
+  renderFrames(leftFrame, rightFrame, paramObject, timeSeconds);
+  drawSceneToCanvas(contextLeft, leftFrame, sceneWidth, sceneHeight, "left");
+  if (layoutLeft) drawSectionsToCanvas(contextLeft, leftFrame, layoutLeft, sceneWidth, sceneHeight);
+  drawSceneToCanvas(contextRight, rightFrame, sceneWidth, sceneHeight, "right");
+  if (layoutRight) drawSectionsToCanvas(contextRight, rightFrame, layoutRight, sceneWidth, sceneHeight);
 }
