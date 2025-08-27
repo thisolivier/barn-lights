@@ -6,7 +6,7 @@ const currentDirectory = dirname(fileURLToPath(import.meta.url));
 
 export default {
   context: resolve(currentDirectory, 'src/ui'),
-  entry: './root.jsx',
+  entry: './main.jsx',
   output: {
     filename: 'bundle.js',
     path: resolve(currentDirectory, 'src/ui/dist'),
