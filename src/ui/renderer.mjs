@@ -1,8 +1,7 @@
 import { sliceSection, clamp01 } from "../effects/modifiers.mjs";
-import { renderScene } from "../render-scene.mjs";
+import { renderFrames } from "../render-scene.mjs";
 
 let offscreen = null, offCtx = null;
-let extendedFrame = null;
 
 function drawSceneToCanvas(ctx, sceneF32, sceneW, sceneH, win, doc){
   if (!offscreen || offscreen.width !== sceneW || offscreen.height !== sceneH){
@@ -68,35 +67,7 @@ export function frame(
   sceneW, sceneH
 ) {
   const t = win.performance.now() / 1000;
-  const mode = P.renderMode;
-  if (mode === "extended"){
-    const W = sceneW * 2;
-    if (!extendedFrame || extendedFrame.length !== W * sceneH * 3){
-      extendedFrame = new Float32Array(W * sceneH * 3);
-    }
-    renderScene(extendedFrame, W, sceneH, t, P);
-    for (let y = 0; y < sceneH; y++){
-      const src = y * W * 3;
-      const dst = y * sceneW * 3;
-      leftFrame.set(extendedFrame.subarray(src, src + sceneW * 3), dst);
-      rightFrame.set(extendedFrame.subarray(src + sceneW * 3, src + W * 3), dst);
-    }
-  } else {
-    renderScene(leftFrame, sceneW, sceneH, t, P);
-    if (mode === "mirror"){
-      for (let y = 0; y < sceneH; y++){
-        for (let x = 0; x < sceneW; x++){
-          const src = ((sceneH - 1 - y) * sceneW + (sceneW - 1 - x)) * 3;
-          const dst = (y * sceneW + x) * 3;
-          rightFrame[dst]   = leftFrame[src];
-          rightFrame[dst+1] = leftFrame[src+1];
-          rightFrame[dst+2] = leftFrame[src+2];
-        }
-      }
-    } else {
-      rightFrame.set(leftFrame);
-    }
-  }
+  renderFrames(leftFrame, rightFrame, P, t);
   drawSceneToCanvas(ctxL, leftFrame, sceneW, sceneH, win, doc);
   if (layoutLeft) drawSectionsToCanvas(ctxL, leftFrame, layoutLeft, sceneW, sceneH);
   drawSceneToCanvas(ctxR, rightFrame, sceneW, sceneH, win, doc);
