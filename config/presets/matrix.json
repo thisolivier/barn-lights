@@ -1,6 +1,6 @@
 {
   "fpsCap": 60,
-  "effect": "gradient",
+  "effect": "digitalRain",
   "renderMode": "duplicate",
   "effects": {
     "gradient": {
@@ -37,10 +37,10 @@
       "fireIntensity": 1.2
     },
     "digitalRain": {
-      "dropSpeed": 0.6,
-      "dropSize": 1,
-      "numberOfDrops": 40,
-      "tailLength": 8,
+      "dropSpeed": 0.95,
+      "dropSize": 10,
+      "numberOfDrops": 183,
+      "tailLength": 18,
       "dropColor": [
         0,
         1,
@@ -63,7 +63,7 @@
     }
   },
   "post": {
-    "brightness": 0.8,
+    "brightness": 1,
     "tint": [
       1,
       1,
@@ -73,9 +73,9 @@
     "strobeHz": 0,
     "strobeDuty": 0.5,
     "strobeLow": 0,
-    "pitchSpeed": 0,
+    "pitchSpeed": 78.81181318681318,
     "yawSpeed": 0,
-    "pitch": 0,
+    "pitch": 144.42677042148202,
     "yaw": 0
   }
 }
