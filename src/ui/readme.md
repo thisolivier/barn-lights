@@ -4,7 +4,7 @@ Browser interface providing a live preview above a panel of controls.
 
 
 - `index.html` – UI control layout and React mount point for the preview.
-- `main.mjs` – fetches layouts and exposes handlers used by the React app.
+- `layout-service.js` – fetches layouts and exposes handlers used by the React app.
 - `App.js` – top-level React component that invokes `run` and provides context. Optional `runFunction`, `renderFrame`, `shouldAnimate`, `ParamsProviderComponent`, and `WebSocketProviderComponent` props enable injecting test doubles.
 - `CanvasPreview.js` – React component rendering preview canvases and driving the frame loop. Custom `renderFrame` and `shouldAnimate` props allow deterministic frame tests.
 - `main.js` – React entry rendering `<App />`.

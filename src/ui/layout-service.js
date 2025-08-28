@@ -1,4 +1,4 @@
-// Rendering is handled by a React component; this module only manages layout and handlers.
+// Layout fetching and runtime handlers for the UI.
 
 function setStatus(doc, msg){
   const el = doc.getElementById("status");
