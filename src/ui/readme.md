@@ -3,6 +3,33 @@
 Browser interface providing a live preview above a panel of controls.
 
 
+## Component hierarchy
+
+`<App>` is the root of the React UI. It wires up context providers and renders
+the two primary pieces of the interface:
+
+```
+<App>
+  ├─ <CanvasPreview />
+  └─ <ControlPanel />
+```
+
+`<CanvasPreview />` shows the live scene on two canvases while
+`<ControlPanel />` exposes sliders and preset management.
+
+### Context flow
+
+`<App>` wraps its children with two contexts:
+
+- `ParamsContext` holds the runtime parameter state. Components such as
+  `ControlPanel` dispatch patches to update this state. These updates are also
+  forwarded over the active WebSocket connection.
+- `WebSocketContext` exposes the WebSocket instance created by `useWebSocket`.
+  `ParamsContext` uses it to send parameter patches, and other components can
+  subscribe to messages if needed. `CanvasPreview` consumes parameter state to
+  render each frame.
+
+
 - `index.html` – UI control layout and React mount point for the preview.
 - `layout-service.js` – fetches layouts and exposes handlers used by the React app.
 - `App.js` – top-level React component that invokes `run` and provides context. Optional `runFunction`, `renderFrame`, `shouldAnimate`, `ParamsProviderComponent`, and `WebSocketProviderComponent` props enable injecting test doubles.
