@@ -33,6 +33,7 @@ export function ParamsProvider({ children, send, onReady }) {
   const contextValue = {
     params: paramsState,
     dispatch: applyPatch,
+    sendPatch: safeSend,
     getParams: () => paramsRef.current
   };
 

@@ -3,6 +3,7 @@ import { run } from './main.mjs';
 import { WebSocketProvider } from './WebSocketContext.js';
 import { ParamsProvider } from './ParamsContext.js';
 import Renderer from './Renderer.jsx';
+import ControlPanel from './ControlPanel.jsx';
 
 export default function App() {
   const [handlers, setHandlers] = useState(null);
@@ -42,6 +43,7 @@ export default function App() {
             sceneHeight={scene.height}
           />
         ) : null}
+        <ControlPanel />
       </WebSocketProvider>
     </ParamsProvider>
   );
