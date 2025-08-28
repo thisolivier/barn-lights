@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { run as defaultRun } from './main.mjs';
 import { WebSocketProvider } from './WebSocketContext.js';
 import { ParamsProvider } from './ParamsContext.js';
+import ControlPanel from './ControlPanel.jsx';
 import CanvasPreview from './CanvasPreview.js';
 
 export default function App({
@@ -42,7 +43,8 @@ export default function App({
     React.createElement(
       WebSocketProviderComponent,
       { onInit, onParams, onError: onStatus, setSend: setSendFunction },
-      runtime && layouts.left && layouts.right && scene.width && scene.height
+      [ 
+        (runtime && layouts.left && layouts.right && scene.width && scene.height
         ? React.createElement(CanvasPreview, {
             getParams: runtime.getParams,
             layoutLeft: layouts.left,
@@ -52,7 +54,12 @@ export default function App({
             renderFrame,
             shouldAnimate
           })
-        : null
+        : null), 
+        React.createElement(ControlPanel, {
+          key: "control"
+          // pass props here if ControlPanel expects any
+        })
+      ]
     )
   );
 }
