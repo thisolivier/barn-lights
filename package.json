@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test --test-concurrency=1",
+    "test": "node --loader ./test/jsx-loader.mjs --test --test-concurrency=1",
     "build:ui": "webpack"
   },
   "dependencies": {

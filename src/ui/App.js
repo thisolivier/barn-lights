@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { run as defaultRun } from './main.mjs';
 import { WebSocketProvider } from './WebSocketContext.js';
 import { ParamsProvider } from './ParamsContext.js';
-import ControlPanel from './ControlPanel.jsx';
+import ControlPanel from './ControlPanel.js';
 import CanvasPreview from './CanvasPreview.js';
 
 export default function App({
