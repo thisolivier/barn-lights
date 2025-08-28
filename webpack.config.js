@@ -6,6 +6,8 @@ const currentDirectory = dirname(fileURLToPath(import.meta.url));
 
 export default {
   context: resolve(currentDirectory, 'src/ui'),
+  // main.js mounts the React app; layout-service.js handles layout fetching
+  // and runtime helpers that were previously in main.mjs.
   entry: './main.js',
   output: {
     filename: 'bundle.js',

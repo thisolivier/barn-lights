@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { run as defaultRun } from './main.mjs';
+import { run as defaultRun } from './layout-service.js';
 import { WebSocketProvider } from './WebSocketContext.js';
 import { ParamsProvider } from './ParamsContext.js';
 import ControlPanel from './ControlPanel.js';
