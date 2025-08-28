@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const shouldSkipWebConsoleTest = process.env.BARN_LIGHTS_SKIP_WEB_TEST === '1';
+const maybeSkip = shouldSkipWebConsoleTest ? test.skip : test;
 
 async function waitForServer(url, retries = 100){
   for (let i = 0; i < retries; i++) {
@@ -18,7 +20,7 @@ async function waitForServer(url, retries = 100){
   throw new Error('server not responding');
 }
 
-test('web view loads with no console errors', async () => {
+maybeSkip('web view loads with no console errors', async () => {
   const proc = spawn('node', ['bin/engine.mjs'], {
     cwd: ROOT,
     stdio: ['ignore', 'ignore', 'pipe']

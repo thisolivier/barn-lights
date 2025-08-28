@@ -9,26 +9,25 @@ import { savePreset, loadPreset, listPresets } from "./config-store.mjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const UI_DIR = path.join(__dirname, "ui");
+const UI_DIST_DIR = path.join(UI_DIR, "dist");
 
 function streamFile(p, mime, res){
   const s = createReadStream(p);
-  res.writeHead(200, { "Content-Type": mime });
+  res.writeHead(200, { "Content-Type": mime, "Connection": "close" });
   s.pipe(res);
 }
 function sendJson(obj, res){
   const buf = Buffer.from(JSON.stringify(obj));
-  res.writeHead(200, { "Content-Type": "application/json" }).end(buf);
+  res.writeHead(200, { "Content-Type": "application/json", "Connection": "close" }).end(buf);
 }
 
 const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, "http://x/");
-  if (u.pathname === "/") return streamFile(path.join(UI_DIR, "index.html"), "text/html", res);
+  if (u.pathname === "/") return streamFile(path.join(UI_DIST_DIR, "index.html"), "text/html", res);
+  if (u.pathname === "/bundle.js") return streamFile(path.join(UI_DIST_DIR, "bundle.js"), "text/javascript", res);
   if (u.pathname === "/preview.mjs") return streamFile(path.join(UI_DIR, "preview.mjs"), "text/javascript", res);
-  if (u.pathname === "/main.mjs") return streamFile(path.join(UI_DIR, "main.mjs"), "text/javascript", res);
-  if (u.pathname === "/connection.mjs") return streamFile(path.join(UI_DIR, "connection.mjs"), "text/javascript", res);
-  if (u.pathname === "/controls-logic.mjs") return streamFile(path.join(UI_DIR, "controls-logic.mjs"), "text/javascript", res);
   if (u.pathname === "/presets.mjs") return streamFile(path.join(UI_DIR, "presets.mjs"), "text/javascript", res);
-  if (u.pathname === "/renderer.mjs") return streamFile(path.join(UI_DIR, "renderer.mjs"), "text/javascript", res);
+  if (u.pathname === "/render-preview-frame.mjs") return streamFile(path.join(UI_DIR, "render-preview-frame.mjs"), "text/javascript", res);
   if (u.pathname === "/render-scene.mjs") return streamFile(path.join(__dirname, "render-scene.mjs"), "text/javascript", res);
   if (u.pathname.startsWith("/subviews/")) {
     const p = path.join(UI_DIR, u.pathname.slice(1));

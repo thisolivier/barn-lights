@@ -14,14 +14,16 @@ Minimal Node + browser setup that:
 3. Execute the commands (node v20-22 required)
 ```bash
 npm install
-npm start
+node bin/engine.mjs
 ```
+   Running the engine directly avoids npm's script banner lines so the NDJSON stream begins immediately.
 4.  Go to `localhost:8080` in your browser
 
 ## Running tests
 ```bash
 npm test
 ```
+Set `BARN_LIGHTS_SKIP_WEB_TEST=1` to skip the browser preview test when running in environments without browser support (Agents use this). The test runner uses a custom loader to transpile React components with JSX.
 
 ## Output contract
 
@@ -69,6 +71,8 @@ systems.
 - `src/engine.mjs` runs the render loop with `renderFrames` and exposes live parameters.
 - `src/server.mjs` exports a `startServer` helper that serves the UI and relays WebSocket param updates.
 - `src/ui/` contains the browser preview and controls.
+- `src/ui/render-preview-frame.mjs` wraps `renderFrames` to draw scenes and per‑LED indicators on canvases for the preview.
+- `src/ui/CanvasPreview.js` is the React component running the canvas preview loop.
 
 Runtime parameters are grouped under `effects` for effect-specific settings
 and `post` for modifiers like brightness, tint and strobe which can be applied on top.
