@@ -46,7 +46,7 @@ the two primary pieces of the interface:
 
 `render-preview-frame.mjs` relies on `renderFrames` from `../render-scene.mjs`, which serves as the source of truth for generating left and right frame buffers. `CanvasPreview.js` invokes this helper on each animation tick to populate the canvases.
 
-The UI is bundled with Webpack, treating this directory as the source and writing output to `dist/`.
+The UI is bundled with Webpack, treating this directory as the source and writing output to `dist/`. `HtmlWebpackPlugin` copies `index.html` into this folder so the server can serve it alongside the compiled bundle.
 The generated `index.html` references the compiled bundle with `<script src="/bundle.js"></script>`.
 
 ## File extensions mix
