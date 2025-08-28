@@ -55,8 +55,8 @@ function drawSectionsToCanvas(canvasContext, sceneFloat32, layout, sceneWidth, s
   });
 }
 
-// frame: render once, draw to both previews, then schedule the next loop
-export function renderFrame(
+// render a single preview frame to both canvases
+export function renderPreviewFrame(
   browserWindow,
   contextLeft, contextRight,
   leftFrame, rightFrame,

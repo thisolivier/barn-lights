@@ -5,14 +5,19 @@ function setStatus(doc, msg){
   if (el) el.textContent = msg;
 }
 
+const layoutCache = {};
+
 async function loadLightLayout(win, doc, side){
-  try {
-    return await (await win.fetch(`/layout/${side}`)).json();
-  } catch (err) {
-    console.error(`Failed to load ${side} layout`, err);
-    setStatus(doc, `Failed to load ${side} layout`);
-    return null;
-  }
+  if (layoutCache[side]) return layoutCache[side];
+  const promise = win.fetch(`/layout/${side}`)
+    .then(r => r.json())
+    .catch(err => {
+      console.error(`Failed to load ${side} layout`, err);
+      setStatus(doc, `Failed to load ${side} layout`);
+      return null;
+    });
+  layoutCache[side] = promise;
+  return promise;
 }
 
 export async function run(applyLocal, setSceneInfo, docArg = globalThis.document){

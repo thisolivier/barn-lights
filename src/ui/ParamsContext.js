@@ -39,15 +39,19 @@ export function ParamsProvider({ children, send, onReady }) {
 
   const applyLocal = useCallback((patchObject) => applyPatch(patchObject, false), [applyPatch]);
 
-  useEffect(() => {
-    if (onReady) onReady({ dispatch: applyPatch, applyLocal, getParams: () => paramsRef.current });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onReady, applyPatch, applyLocal]);
+  const readySendRef = useRef(null);
 
-  return (
-    <ParamsContext.Provider value={contextValue}>
-      {children}
-    </ParamsContext.Provider>
+  useEffect(() => {
+    if (onReady && readySendRef.current !== safeSend) {
+      readySendRef.current = safeSend;
+      onReady({ dispatch: applyPatch, applyLocal, getParams: () => paramsRef.current });
+    }
+  }, [onReady, applyPatch, applyLocal, safeSend]);
+
+  return React.createElement(
+    ParamsContext.Provider,
+    { value: contextValue },
+    children
   );
 }
 

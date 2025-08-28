@@ -10,10 +10,10 @@ export function WebSocketProvider({ children, url = `ws://${globalThis.location.
     if (setSend) setSend(send);
   }, [send, setSend]);
 
-  return (
-    <WebSocketContext.Provider value={{ readyState, send }}>
-      {children}
-    </WebSocketContext.Provider>
+  return React.createElement(
+    WebSocketContext.Provider,
+    { value: { readyState, send } },
+    children
   );
 }
 
