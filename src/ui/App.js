@@ -57,7 +57,6 @@ export default function App({
         : null), 
         React.createElement(ControlPanel, {
           key: "control"
-          // pass props here if ControlPanel expects any
         })
       ]
     )
