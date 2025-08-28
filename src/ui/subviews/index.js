@@ -61,17 +61,32 @@ function ColorControl({ label, value, onChange }) {
 
 function ColorStopsControl({ label, value = [], onChange }) {
   const containerRef = useRef(null);
+  const gradientPickerRef = useRef(null);
   useEffect(() => {
     if (!containerRef.current || !window.Grapick) return;
-    const gp = new window.Grapick({ el: containerRef.current, direction: 'to right' });
-    value.forEach((s) => gp.addHandler((s.pos ?? 0) * 100, rgbToHex(s.color || [1,1,1])));
-    gp.on('change', () => {
-      const handlers = gp.getHandlers().slice().sort((a, b) => a.position - b.position);
-      const stops = handlers.map((h) => ({ pos: h.position / 100, color: hexToRgb(h.color) }));
+    const gradientPicker = new window.Grapick({ el: containerRef.current, direction: 'to right' });
+    gradientPicker.on('change', () => {
+      const handlers = gradientPicker.getHandlers().slice().sort((a, b) => a.position - b.position);
+      const stops = handlers.map((handler) => ({ pos: handler.position / 100, color: hexToRgb(handler.color) }));
       onChange(stops);
     });
-    return () => gp.destroy();
+    gradientPickerRef.current = gradientPicker;
+    return () => {
+      gradientPicker.destroy();
+      gradientPickerRef.current = null;
+    };
   }, []);
+  useEffect(() => {
+    const gradientPicker = gradientPickerRef.current;
+    if (!gradientPicker) return;
+    gradientPicker.clear({ silent: 1 });
+    value.forEach((stop) => {
+      const position = (stop.pos ?? 0) * 100;
+      const colorHex = rgbToHex(stop.color || [1,1,1]);
+      gradientPicker.addHandler(position, colorHex, 0, { silent: 1 });
+    });
+    gradientPicker.change(1, { silent: 1 });
+  }, [value]);
   return (
     <label>
       {label}
