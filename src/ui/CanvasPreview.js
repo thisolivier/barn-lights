@@ -18,12 +18,14 @@ export default function CanvasPreview({
     const canvasLeft = canvasLeftRef.current;
     const canvasRight = canvasRightRef.current;
     if (!canvasLeft || !canvasRight) return;
+    console.log('CanvasPreview effect start');
 
     const contextLeft = canvasLeft.getContext('2d');
     const contextRight = canvasRight.getContext('2d');
     const leftFrame = new Float32Array(sceneWidth * sceneHeight * 3);
     const rightFrame = new Float32Array(sceneWidth * sceneHeight * 3);
     let frameRequest = 0;
+    let frameCounter = 0;
     const win = canvasLeft.ownerDocument.defaultView || window;
 
     const loop = () => {
@@ -39,6 +41,8 @@ export default function CanvasPreview({
         sceneWidth,
         sceneHeight
       );
+      console.log('CanvasPreview animation frame', frameCounter);
+      frameCounter += 1;
       if (shouldAnimate) {
         frameRequest = win.requestAnimationFrame(loop);
       }
@@ -50,6 +54,7 @@ export default function CanvasPreview({
     }
 
     return () => {
+      console.log('CanvasPreview cleanup');
       if (frameRequest && shouldAnimate) win.cancelAnimationFrame(frameRequest);
       clearImageCaches();
     };

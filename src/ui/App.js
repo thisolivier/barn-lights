@@ -19,6 +19,7 @@ export default function App({
   const [scene, setScene] = useState({ width: 0, height: 0 });
 
   const handleReady = useCallback((runtimeValue) => {
+    console.log('Runtime initialized');
     setRuntime(runtimeValue);
   }, []);
 
@@ -27,9 +28,16 @@ export default function App({
       runFunction(runtime.applyLocal, setScene).then(result => {
         setHandlers(result);
         setLayouts({ left: result.layoutLeft, right: result.layoutRight });
+        console.log('Layouts loaded');
       });
     }
   }, [runtime, runFunction]);
+
+  useEffect(() => {
+    if (runtime && layouts.left && layouts.right && scene.width && scene.height) {
+      console.log('CanvasPreview mounted');
+    }
+  }, [runtime, layouts.left, layouts.right, scene.width, scene.height]);
 
   const { onInit, onParams, onStatus } = handlers || {
     onInit: () => {},

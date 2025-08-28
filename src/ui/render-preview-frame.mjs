@@ -64,6 +64,7 @@ export function renderPreviewFrame(
   layoutLeft, layoutRight,
   sceneWidth, sceneHeight
 ) {
+  console.log('renderPreviewFrame start');
   const timeSeconds = browserWindow.performance.now() / 1000;
   const paramObject = getParams();
   renderFrames(leftFrame, rightFrame, paramObject, timeSeconds);
@@ -71,4 +72,5 @@ export function renderPreviewFrame(
   if (layoutLeft) drawSectionsToCanvas(contextLeft, leftFrame, layoutLeft, sceneWidth, sceneHeight);
   drawSceneToCanvas(contextRight, rightFrame, sceneWidth, sceneHeight, "right");
   if (layoutRight) drawSectionsToCanvas(contextRight, rightFrame, layoutRight, sceneWidth, sceneHeight);
+  console.log('renderPreviewFrame end');
 }
