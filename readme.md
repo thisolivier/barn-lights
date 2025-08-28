@@ -71,6 +71,8 @@ systems.
 - `src/engine.mjs` runs the render loop with `renderFrames` and exposes live parameters.
 - `src/server.mjs` exports a `startServer` helper that serves the UI and relays WebSocket param updates.
 - `src/ui/` contains the browser preview and controls.
+- `src/ui/render-preview-frame.mjs` wraps `renderFrames` to draw scenes and per‑LED indicators on canvases for the preview.
+- `src/ui/CanvasPreview.js` is the React component running the canvas preview loop.
 
 Runtime parameters are grouped under `effects` for effect-specific settings
 and `post` for modifiers like brightness, tint and strobe which can be applied on top.

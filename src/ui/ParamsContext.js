@@ -47,10 +47,10 @@ export function ParamsProvider({ children, send, onReady }) {
     }
   }, [onReady, applyPatch, applyLocal, safeSend]);
 
-  return (
-    <ParamsContext.Provider value={contextValue}>
-      {children}
-    </ParamsContext.Provider>
+  return React.createElement(
+    ParamsContext.Provider,
+    { value: contextValue },
+    children
   );
 }
 
