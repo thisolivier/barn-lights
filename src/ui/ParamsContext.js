@@ -39,14 +39,14 @@ export function ParamsProvider({ children, send, onReady }) {
 
   const applyLocal = useCallback((patchObject) => applyPatch(patchObject, false), [applyPatch]);
 
-  const readySendRef = useRef(null);
+  const isReadyRef = useRef(false);
 
   useEffect(() => {
-    if (onReady && readySendRef.current !== safeSend) {
-      readySendRef.current = safeSend;
+    if (onReady && !isReadyRef.current) {
+      isReadyRef.current = true;
       onReady({ dispatch: applyPatch, applyLocal, getParams: () => paramsRef.current });
     }
-  }, [onReady, applyPatch, applyLocal, safeSend]);
+  }, [onReady, applyPatch, applyLocal]);
 
   return React.createElement(
     ParamsContext.Provider,

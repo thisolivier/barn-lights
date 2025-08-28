@@ -4,9 +4,25 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
   const socketRef = useRef(null);
   const [readyState, setReadyState] = useState('closed');
 
-  const send = useCallback((obj) => {
+  const initCallbackRef = useRef(onInit);
+  const paramsCallbackRef = useRef(onParams);
+  const errorCallbackRef = useRef(onError);
+
+  useEffect(() => {
+    initCallbackRef.current = onInit;
+  }, [onInit]);
+
+  useEffect(() => {
+    paramsCallbackRef.current = onParams;
+  }, [onParams]);
+
+  useEffect(() => {
+    errorCallbackRef.current = onError;
+  }, [onError]);
+
+  const send = useCallback((objectToSend) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify(obj));
+      socketRef.current.send(JSON.stringify(objectToSend));
     }
   }, []);
 
@@ -22,13 +38,13 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
         socket.onerror = (event) => {
           console.error('WebSocket error', event);
           setReadyState('error');
-          if (onError) onError('WebSocket connection error');
+          if (errorCallbackRef.current) errorCallbackRef.current('WebSocket connection error');
         };
 
         socket.onclose = (event) => {
           console.log('WebSocket closed', event);
           setReadyState('closed');
-          if (onError) onError('WebSocket connection closed');
+          if (errorCallbackRef.current) errorCallbackRef.current('WebSocket connection closed');
         };
 
         socket.onopen = () => {
@@ -39,13 +55,13 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
         socket.onmessage = (event) => {
           console.log('WebSocket message received', event.data);
           const message = JSON.parse(event.data);
-          if (message.type === 'init' && onInit) onInit(message);
-          if (message.type === 'params' && onParams) onParams(message);
+          if (message.type === 'init' && initCallbackRef.current) initCallbackRef.current(message);
+          if (message.type === 'params' && paramsCallbackRef.current) paramsCallbackRef.current(message);
         };
       } catch (err) {
         console.error('Failed to create WebSocket', err);
         setReadyState('error');
-        if (onError) onError('Failed to connect to server');
+        if (errorCallbackRef.current) errorCallbackRef.current('Failed to connect to server');
       }
     }, 600);
 
@@ -56,7 +72,7 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
         socket.close();
       }
     };
-  }, [url, onInit, onParams, onError]);
+  }, [url]);
 
   return { readyState, send };
 }
