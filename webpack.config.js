@@ -6,7 +6,7 @@ const currentDirectory = dirname(fileURLToPath(import.meta.url));
 
 export default {
   context: resolve(currentDirectory, 'src/ui'),
-  entry: './main.jsx',
+  entry: './main.js',
   output: {
     filename: 'bundle.js',
     path: resolve(currentDirectory, 'src/ui/dist'),
@@ -14,12 +14,12 @@ export default {
     clean: true
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js']
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',

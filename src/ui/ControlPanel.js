@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParamsContext } from './ParamsContext.js';
 import { effects } from '../effects/index.mjs';
 import { fetchPresetNames } from './presets.mjs';
-import EffectControls from './subviews/index.jsx';
+import EffectControls from './subviews/index.js';
 
 export default function ControlPanel() {
   const { params, dispatch, sendPatch } = useParamsContext();

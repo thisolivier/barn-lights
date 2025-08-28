@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import babelRegister from '@babel/register';
-babelRegister({ extensions: ['.js', '.jsx'], presets: ['@babel/preset-react'] });
+babelRegister({ extensions: ['.js'], presets: ['@babel/preset-react'] });
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { JSDOM } from 'jsdom';
+import { ParamsContext } from '../src/ui/ParamsContext.js';
 const App = (await import('../src/ui/App.js')).default;
 
 function createMockContext(){
@@ -61,10 +62,16 @@ test('react app renders canvas via simulated engine and frame drawer', async () 
   document.body.appendChild(container);
   const root = ReactDOM.createRoot(container);
   function StubParamsProvider({ children, onReady }) {
+    const contextValue = {
+      params: {},
+      dispatch: () => {},
+      sendPatch: () => {},
+      getParams: () => ({})
+    };
     React.useEffect(() => {
-      if (onReady) onReady({ getParams: () => ({}), applyLocal: () => {}, dispatch: () => {} });
+      if (onReady) onReady({ getParams: contextValue.getParams, applyLocal: () => {}, dispatch: () => {} });
     }, [onReady]);
-    return children;
+    return React.createElement(ParamsContext.Provider, { value: contextValue }, children);
   }
   function StubWebSocketProvider({ children, setSend }) {
     React.useEffect(() => {

@@ -2,7 +2,7 @@
 
 The browser preview converts runtime parameters into per-wall frame buffers.
 
-1. `Renderer.jsx` drives a `requestAnimationFrame` loop.
+1. `CanvasPreview.js` drives a `requestAnimationFrame` loop.
 2. Each tick calls `renderFrame` from `renderer.mjs` which fills left and
    right `Float32Array` buffers using `renderFrames`.
 3. The buffers are drawn onto paired `<canvas>` elements and optional layout
