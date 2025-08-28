@@ -22,3 +22,11 @@ The UI is bundled with Webpack, treating this directory as the source and writin
 The generated `index.html` references the compiled bundle with `<script src="/bundle.js"></script>`.
 
 Console logging traces runtime initialization, layout loading, WebSocket activity, preview rendering, and cleanup to aid debugging.
+
+## File extensions
+
+- `.js` – React modules bundled with Webpack. With `"type": "module"` in `package.json`, these files are treated as ES modules.
+- `.mjs` – standalone ES modules invoked directly by Node, such as `main.mjs` and `render-preview-frame.mjs`. They remain to highlight code paths that run outside the bundle. The plan is to rename these to `.js` for consistency as the pipeline stabilizes.
+- `.html` – static entry template for the UI.
+- `.ico` – favicon asset referenced by `index.html`.
+- `.md` – documentation files like this one.
