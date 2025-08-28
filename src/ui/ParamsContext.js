@@ -43,10 +43,10 @@ export function ParamsProvider({ children, send, onReady }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onReady, applyPatch, applyLocal]);
 
-  return (
-    <ParamsContext.Provider value={contextValue}>
-      {children}
-    </ParamsContext.Provider>
+  return React.createElement(
+    ParamsContext.Provider,
+    { value: contextValue },
+    children
   );
 }
 
