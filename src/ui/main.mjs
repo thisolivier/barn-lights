@@ -9,8 +9,13 @@ const layoutCache = {};
 
 async function loadLightLayout(win, doc, side){
   if (layoutCache[side]) return layoutCache[side];
+  console.log(`Fetching ${side} layout`);
   const promise = win.fetch(`/layout/${side}`)
-    .then(r => r.json())
+    .then(response => response.json())
+    .then(layout => {
+      console.log(`Fetched ${side} layout`);
+      return layout;
+    })
     .catch(err => {
       console.error(`Failed to load ${side} layout`, err);
       setStatus(doc, `Failed to load ${side} layout`);
@@ -39,6 +44,6 @@ export async function run(applyLocal, setSceneInfo, docArg = globalThis.document
   };
 
   const onStatus = (statusMessage) => setStatus(doc, statusMessage);
-
+  console.log('run resolved');
   return { onInit, onParams, onStatus, layoutLeft, layoutRight };
 }

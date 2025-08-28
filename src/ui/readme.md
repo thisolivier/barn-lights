@@ -20,3 +20,5 @@ Browser interface providing a live preview above a panel of controls.
 
 The UI is bundled with Webpack, treating this directory as the source and writing output to `dist/`.
 The generated `index.html` references the compiled bundle with `<script src="/bundle.js"></script>`.
+
+Console logging traces runtime initialization, layout loading, WebSocket activity, preview rendering, and cleanup to aid debugging.

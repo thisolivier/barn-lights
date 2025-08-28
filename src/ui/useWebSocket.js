@@ -14,6 +14,7 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
     let socket = null;
     const timer = setTimeout(() => {
       try {
+        console.log(`Attempting WebSocket connection to ${url}`);
         socket = new WebSocket(url);
         socketRef.current = socket;
         setReadyState('connecting');
@@ -25,16 +26,18 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
         };
 
         socket.onclose = (event) => {
-          console.warn('WebSocket closed', event);
+          console.log('WebSocket closed', event);
           setReadyState('closed');
           if (onError) onError('WebSocket connection closed');
         };
 
         socket.onopen = () => {
+          console.log('WebSocket opened');
           setReadyState('open');
         };
 
         socket.onmessage = (event) => {
+          console.log('WebSocket message received', event.data);
           const message = JSON.parse(event.data);
           if (message.type === 'init' && onInit) onInit(message);
           if (message.type === 'params' && onParams) onParams(message);
@@ -48,7 +51,10 @@ export function useWebSocket(url, { onInit, onParams, onError } = {}) {
 
     return () => {
       clearTimeout(timer);
-      if (socket) socket.close();
+      if (socket) {
+        console.log('Closing WebSocket connection');
+        socket.close();
+      }
     };
   }, [url, onInit, onParams, onError]);
 
