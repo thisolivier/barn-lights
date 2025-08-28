@@ -8,6 +8,7 @@ Automated checks for BarnLights Playbox:
 - `config.test.mjs` – verifies configuration LED totals and section bounds.
 - `preset.test.mjs` – saves and loads effect presets and their preview images.
 - `preset-ui.test.mjs` – ensures the preset panel reflects available files.
+- `ui-preview.test.mjs` – renders the React UI with simulated engine and frame drawer to verify canvas output.
 - `web.test.mjs` – loads the browser preview and fails on console errors. Set `BARN_LIGHTS_SKIP_WEB_TEST=1` to skip this check when browser dependencies are missing.
 - `renderFrames.test.mjs` – verifies duplicate, extended, and mirror frame-splitting modes.
 - `gradient.test.mjs` – confirms the gradient effect can reverse direction.

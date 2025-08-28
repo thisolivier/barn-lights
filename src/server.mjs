@@ -28,7 +28,7 @@ const server = http.createServer(async (req, res) => {
   if (u.pathname === "/preview.mjs") return streamFile(path.join(UI_DIR, "preview.mjs"), "text/javascript", res);
   if (u.pathname === "/main.mjs") return streamFile(path.join(UI_DIR, "main.mjs"), "text/javascript", res);
   if (u.pathname === "/presets.mjs") return streamFile(path.join(UI_DIR, "presets.mjs"), "text/javascript", res);
-  if (u.pathname === "/renderer.mjs") return streamFile(path.join(UI_DIR, "renderer.mjs"), "text/javascript", res);
+  if (u.pathname === "/render-preview-frame.mjs") return streamFile(path.join(UI_DIR, "render-preview-frame.mjs"), "text/javascript", res);
   if (u.pathname === "/render-scene.mjs") return streamFile(path.join(__dirname, "render-scene.mjs"), "text/javascript", res);
   if (u.pathname.startsWith("/subviews/")) {
     const p = path.join(UI_DIR, u.pathname.slice(1));
