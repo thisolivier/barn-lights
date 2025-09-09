@@ -1,4 +1,6 @@
-# BarnLights Playbox (test harness)
+# BarnLights Renderer
+
+This codebase will start and display a rendering engine for the customisable LED lights installed in the Elkenmist barn. It will output formatted RGB data in JSON format at up to 60FPS. The intenstion is for this to be consumed by a [UDP sender](https://github.com/thisolivier/barn-lights-UDP-sender), and then sent to some [microcontroller firmware](https://github.com/thisolivier/barn-lights-firmware).
 
 Minimal Node + browser setup that:
 - renders gradients / solid / noise onto a 2D virtual scene,
